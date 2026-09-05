@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Isora
+GenericName=Менеджер виртуальных машин
+Comment=Создание и запуск виртуальных машин QEMU/KVM
+Exec=isora
+Icon=io.github.ll_host.Isora
+Terminal=false
+Categories=System;Emulator;
+Keywords=KVM;QEMU;libvirt;VM;виртуальная машина;ISO;
+StartupNotify=true

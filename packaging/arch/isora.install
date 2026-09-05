@@ -1,0 +1,11 @@
+post_install() {
+  if [[ -d /run/systemd/system ]]; then
+    /usr/bin/systemctl enable --now virtqemud.socket virtstoraged.socket
+  else
+    /usr/bin/systemctl enable virtqemud.socket virtstoraged.socket
+  fi
+}
+
+post_upgrade() {
+  post_install
+}
