@@ -1,8 +1,15 @@
 post_install() {
+  local sockets=(
+    virtqemud.socket
+    virtqemud-ro.socket
+    virtstoraged.socket
+    virtstoraged-ro.socket
+  )
+
   if [[ -d /run/systemd/system ]]; then
-    /usr/bin/systemctl enable --now virtqemud.socket virtstoraged.socket
+    /usr/bin/systemctl enable --now "${sockets[@]}"
   else
-    /usr/bin/systemctl enable virtqemud.socket virtstoraged.socket
+    /usr/bin/systemctl enable "${sockets[@]}"
   fi
 }
 
