@@ -27,7 +27,7 @@ sudo pacman -U ./isora-<версия>-1-x86_64.pkg.tar.zst
 
 В GitHub Releases публикуется только готовый `.pkg.tar.zst`, собранный локально. GitHub дополнительно показывает автоматически создаваемые ссылки на архивы исходников.
 
-Пакет устанавливает `isora`, `isoractl`, desktop entry и значок. При установке включаются обычные и read-only сокеты `virtqemud` и `virtstoraged`, необходимые для управления и фонового обновления списка машин.
+Пакет устанавливает `isora`, `isoractl`, desktop entry и значок. При установке включаются обычные и read-only сокеты `virtqemud` и `virtstoraged`, а также обязательные для запуска машин службы журналирования `virtlogd` и блокировок `virtlockd`.
 
 Зависимости: Qt 6.8+, libvirt, QEMU, virt-viewer; для UEFI рекомендуется `edk2-ovmf`.
 

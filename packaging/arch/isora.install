@@ -4,6 +4,8 @@ post_install() {
     virtqemud-ro.socket
     virtstoraged.socket
     virtstoraged-ro.socket
+    virtlogd.socket
+    virtlockd.socket
   )
 
   if [[ -d /run/systemd/system ]]; then
