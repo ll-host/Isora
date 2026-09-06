@@ -7,7 +7,14 @@ post_install() {
   )
 
   if [[ -d /run/systemd/system ]]; then
-    /usr/bin/systemctl enable --now "${sockets[@]}"
+    /usr/bin/systemctl enable "${sockets[@]}"
+    /usr/bin/systemctl daemon-reload
+
+    # `enable --now` leaves an already active socket untouched. After a
+    # libvirt/systemd update such a unit can remain active without a listening
+    # file descriptor, making libvirt fail with "Connection refused". Restart
+    # every socket so both fresh installs and upgrades get usable listeners.
+    /usr/bin/systemctl restart "${sockets[@]}"
   else
     /usr/bin/systemctl enable "${sockets[@]}"
   fi
