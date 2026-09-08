@@ -211,6 +211,13 @@ bool validDisplayMode(const QString& mode)
            mode == QStringLiteral("fullscreen");
 }
 
+bool isEglInitializationError(const QString& error)
+{
+    return error.contains(QStringLiteral("EGL_NOT_INITIALIZED"), Qt::CaseInsensitive) ||
+           error.contains(QStringLiteral("eglInitialize failed"), Qt::CaseInsensitive) ||
+           error.contains(QStringLiteral("render node init failed"), Qt::CaseInsensitive);
+}
+
 bool authorizeManagement(QString* error)
 {
     const QString executable = QStandardPaths::findExecutable(QStringLiteral("pkcheck"));
@@ -1232,6 +1239,30 @@ bool LibvirtManager::start(const QString& id, QString* error)
         }
         upgradedXml = normalize3dDisplay(currentXml, renderDevice->path);
     }
+
+    const auto retryWithout3d = [this, &document, &currentXml, error](const QString& startError) {
+        if (!domainUses3d(document) || !isEglInitializationError(startError)) {
+            *error = QStringLiteral("Не удалось запустить машину: %1").arg(startError);
+            return false;
+        }
+
+        const QString fallbackXml = normalize2dDisplay(currentXml);
+        if (!validateDomainXml(fallbackXml, error))
+            return false;
+        DomainHandle fallback(virDomainDefineXML(m_connection, fallbackXml.toUtf8().constData()));
+        if (!fallback.value) {
+            *error = QStringLiteral("Аппаратное 3D недоступно (%1). Не удалось включить безопасный режим 2D: %2")
+                         .arg(startError, lastError({}));
+            return false;
+        }
+        if (virDomainCreate(fallback) < 0) {
+            *error = QStringLiteral("Аппаратное 3D недоступно (%1). Запуск в режиме 2D также завершился ошибкой: %2")
+                         .arg(startError, lastError({}));
+            return false;
+        }
+        return true;
+    };
+
     if (upgradedXml != currentXml) {
         if (!validateDomainXml(upgradedXml, error))
             return false;
@@ -1241,14 +1272,14 @@ bool LibvirtManager::start(const QString& id, QString* error)
             return false;
         }
         if (virDomainCreate(upgraded) < 0) {
-            *error = QStringLiteral("Не удалось запустить машину: %1").arg(lastError({}));
-            return false;
+            const QString startError = lastError(QStringLiteral("неизвестная ошибка запуска"));
+            return retryWithout3d(startError);
         }
         return true;
     }
     if (virDomainCreate(item) < 0) {
-        *error = QStringLiteral("Не удалось запустить машину: %1").arg(lastError({}));
-        return false;
+        const QString startError = lastError(QStringLiteral("неизвестная ошибка запуска"));
+        return retryWithout3d(startError);
     }
     return true;
 }
