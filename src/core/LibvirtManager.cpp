@@ -322,6 +322,7 @@ QString normalize3dDisplay(const QString& xml, const QString& renderNode)
         video.appendChild(model);
     }
     model.setAttribute(QStringLiteral("type"), QStringLiteral("virtio"));
+    model.removeAttribute(QStringLiteral("device"));
     QDomElement acceleration = model.firstChildElement(QStringLiteral("acceleration"));
     if (acceleration.isNull()) {
         acceleration = document.createElement(QStringLiteral("acceleration"));
@@ -387,6 +388,11 @@ QString normalize2dDisplay(const QString& xml)
         video.appendChild(model);
     }
     model.setAttribute(QStringLiteral("type"), QStringLiteral("virtio"));
+    // libvirt includes the resolved QEMU model in inactive XML. Keeping
+    // `device='virtio-vga-gl'` while removing accel3d produces an invalid
+    // fallback: virtio-vga-gl can only be used with 3D acceleration. Let
+    // libvirt resolve the non-GL VirtIO model again from type='virtio'.
+    model.removeAttribute(QStringLiteral("device"));
     QDomElement acceleration = model.firstChildElement(QStringLiteral("acceleration"));
     if (!acceleration.isNull())
         model.removeChild(acceleration);

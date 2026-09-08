@@ -164,10 +164,78 @@ verify_package_state() {
 }
 
 install_arch_package() {
+    [[ -f /etc/arch-release ]] || {
+        fail 'установка pacman-пакета поддерживается только на Arch Linux'
+        return 1
+    }
+    require_command curl || return 1
     require_command sudo || return 1
     require_command pacman || return 1
-    local package
-    package="$(current_package)" || return 1
+
+    local download_dir release_json asset_name asset_url package temporary installed_name
+    local -a release_urls=()
+    download_dir="$(getent passwd "$(id -u)" | cut -d: -f6)"
+    download_dir="$(realpath -e -- "$download_dir")" || return 1
+    [[ "$download_dir" != '/' && -d "$download_dir" && -w "$download_dir" ]] || {
+        fail 'не удалось определить доступную для записи домашнюю папку'
+        return 1
+    }
+
+    printf '%sПроверяю последний опубликованный GitHub Release…%s\n' "$BLUE" "$RESET"
+    release_json="$(curl --fail --silent --show-error --location --retry 3 \
+        --header 'Accept: application/vnd.github+json' \
+        --header 'X-GitHub-Api-Version: 2022-11-28' \
+        --header 'User-Agent: Isora-installer' \
+        "https://api.github.com/repos/${REPOSITORY}/releases?per_page=1")" || {
+        fail 'не удалось получить сведения о последнем GitHub Release'
+        return 1
+    }
+
+    mapfile -t release_urls < <(tr ',' '\n' <<< "$release_json" | sed -n \
+        's|^[[:space:]]*"browser_download_url":[[:space:]]*"\(https://github\.com/ll-host/Isora/releases/download/[^"?]*/isora-[^"/?]*\.pkg\.tar\.zst\)".*|\1|p' \
+        | grep -v -- '-debug-')
+    if ((${#release_urls[@]} != 1)); then
+        fail 'в последнем GitHub Release должен находиться ровно один пакет Isora для Arch Linux'
+        return 1
+    fi
+    asset_url="${release_urls[0]}"
+    asset_name="${asset_url##*/}"
+    [[ "$asset_name" == isora-*.pkg.tar.zst && "$asset_name" != */* && "$asset_url" == https://github.com/* ]] || {
+        fail 'GitHub вернул некорректные данные пакета'
+        return 1
+    }
+
+    package="${download_dir}/${asset_name}"
+    temporary="$(mktemp --tmpdir="$download_dir" '.isora-download.XXXXXX.part')" || return 1
+    printf '%sСкачиваю:%s %s\n' "$BLUE" "$RESET" "$asset_name"
+    if ! curl --fail --show-error --location --retry 3 --output "$temporary" "$asset_url"; then
+        unlink -- "$temporary"
+        fail 'скачивание пакета не завершено'
+        return 1
+    fi
+
+    installed_name="$(pacman -Qp --print-format '%n' "$temporary" 2>/dev/null)" || {
+        unlink -- "$temporary"
+        fail 'скачанный файл не является корректным pacman-пакетом'
+        return 1
+    }
+    if [[ "$installed_name" != 'isora' ]]; then
+        unlink -- "$temporary"
+        fail "скачанный пакет имеет неожиданное имя: ${installed_name}"
+        return 1
+    fi
+
+    local -a old_packages=()
+    shopt -s nullglob
+    old_packages=("${download_dir}"/isora-*.pkg.tar.zst)
+    shopt -u nullglob
+    local old_package
+    for old_package in "${old_packages[@]}"; do
+        [[ "$old_package" == "$package" ]] || unlink -- "$old_package" || return 1
+    done
+    mv -f -- "$temporary" "$package" || return 1
+
+    printf '%sСохранено:%s %s\n' "$GREEN" "$RESET" "$package"
     sudo pacman -U --needed "$package"
 }
 
@@ -335,7 +403,7 @@ main() {
         printf '%s%s%s\n\n' "$DIM" "$PROJECT_ROOT" "$RESET"
         printf '  1. Собрать пакет для Arch Linux\n'
         printf '  2. Опубликовать пакет в GitHub Releases\n'
-        printf '  3. Установить собранный пакет через pacman\n'
+        printf '  3. Скачать последний GitHub Release и установить через pacman\n'
         printf '  4. Закоммитить все изменения и отправить в GitHub\n'
         printf '  5. Подтянуть изменения из GitHub (pull --rebase)\n'
         printf '  6. Показать состояние проекта\n'
