@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QColor>
+#include <QEvent>
 #include <QObject>
 
 class AppearanceController final : public QObject
@@ -27,5 +28,6 @@ class AppearanceController final : public QObject
     void appearanceChanged();
 
   private:
+    bool eventFilter(QObject* watched, QEvent* event) override;
     static QString normalizedAccent(const QString& value);
 };

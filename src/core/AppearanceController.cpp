@@ -7,7 +7,14 @@
 
 AppearanceController::AppearanceController(QObject* parent) : QObject(parent)
 {
-    connect(qGuiApp, &QGuiApplication::paletteChanged, this, [this] { emit appearanceChanged(); });
+    qGuiApp->installEventFilter(this);
+}
+
+bool AppearanceController::eventFilter(QObject* watched, QEvent* event)
+{
+    if (watched == qGuiApp && event->type() == QEvent::ApplicationPaletteChange)
+        emit appearanceChanged();
+    return QObject::eventFilter(watched, event);
 }
 
 QString AppearanceController::normalizedAccent(const QString& value)

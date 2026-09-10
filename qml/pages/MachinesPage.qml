@@ -366,7 +366,11 @@ Item {
                             anchors.fill: parent
                             anchors.margins: 14
                             spacing: 10
-                            ColumnLayout { Layout.fillWidth: true; Label { text: modelData.name; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold }; Label { text: modelData.createdAt; color: Theme.textMuted; font.pixelSize: 10 } }
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                Label { text: modelData.name; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold }
+                                Label { text: modelData.createdAt; color: Theme.textMuted; font.pixelSize: 10 }
+                            }
                             ActionButton { text: "Восстановить"; enabled: !App.busy; onClicked: { root.selectedSnapshot = modelData; root.pendingAction = "restore-snapshot" } }
                             ActionButton { text: "Удалить"; danger: true; enabled: !App.busy; onClicked: { root.selectedSnapshot = modelData; root.pendingAction = "delete-snapshot" } }
                         }
@@ -415,7 +419,11 @@ Item {
                             anchors.fill: parent
                             anchors.margins: 14
                             spacing: 10
-                            ColumnLayout { Layout.fillWidth: true; Label { text: root.formatBackupDate(modelData.createdAt); color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold }; Label { text: modelData.sizeText + " · отдельная копия диска"; color: Theme.textMuted; font.pixelSize: 10 } }
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                Label { text: root.formatBackupDate(modelData.createdAt); color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold }
+                                Label { text: modelData.sizeText + " · отдельная копия диска"; color: Theme.textMuted; font.pixelSize: 10 }
+                            }
                             ActionButton { text: "Проверить"; enabled: !App.busy; onClicked: App.verifyBackup(modelData.path) }
                             ActionButton { text: "Восстановить"; enabled: !App.busy; onClicked: { root.selectedBackup = modelData; root.pendingAction = "restore-backup" } }
                             ActionButton { text: "Удалить"; danger: true; enabled: !App.busy; onClicked: { root.selectedBackup = modelData; root.pendingAction = "delete-backup" } }
@@ -533,7 +541,12 @@ Item {
         contentItem: RowLayout {
             spacing: 14
             Rectangle { Layout.preferredWidth: 44; Layout.preferredHeight: 44; radius: 14; color: Theme.accentSubtle; Image { anchors.centerIn: parent; width: 22; height: 22; source: navigationCard.iconSource } }
-            ColumnLayout { Layout.fillWidth: true; spacing: 4; Label { text: navigationCard.title; color: Theme.text; font.pixelSize: 14; font.weight: Font.DemiBold }; Label { Layout.fillWidth: true; text: navigationCard.description; color: Theme.textMuted; font.pixelSize: 10; elide: Text.ElideRight } }
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 4
+                Label { text: navigationCard.title; color: Theme.text; font.pixelSize: 14; font.weight: Font.DemiBold }
+                Label { Layout.fillWidth: true; text: navigationCard.description; color: Theme.textMuted; font.pixelSize: 10; elide: Text.ElideRight }
+            }
             Label { text: "›"; color: Theme.textSecondary; font.pixelSize: 22 }
         }
         background: Rectangle { radius: Theme.radiusCard; color: navigationCard.hovered ? Theme.surfaceHover : Theme.surface; border.width: navigationCard.activeFocus ? 2 : 0; border.color: Theme.accent }
