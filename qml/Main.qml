@@ -138,8 +138,9 @@ ApplicationWindow {
 
                     Button {
                         id: createMachineButton
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: window.compactNavigation ? 44 : 48
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredWidth: 164
+                        Layout.preferredHeight: window.compactNavigation ? 38 : 40
                         text: "Создать машину"
                         enabled: App.connected && !App.busy
                         padding: 0
@@ -154,13 +155,13 @@ ApplicationWindow {
                         contentItem: Item {
                             RowLayout {
                                 anchors.centerIn: parent
-                                spacing: 10
-                                Label { text: "+"; color: Theme.accentText; font.pixelSize: 20; font.weight: Font.Medium }
-                                Label { text: createMachineButton.text; color: Theme.accentText; font.pixelSize: 12; font.weight: Font.DemiBold }
+                                spacing: 8
+                                Label { text: "+"; color: Theme.accentText; font.pixelSize: 18; font.weight: Font.Medium }
+                                Label { text: createMachineButton.text; color: Theme.accentText; font.pixelSize: 11; font.weight: Font.DemiBold }
                             }
                         }
                         background: Rectangle {
-                            radius: 15
+                            radius: 12
                             color: createMachineButton.down ? Qt.darker(Theme.accent, 1.08) : (createMachineButton.hovered ? Theme.accentHover : Theme.accent)
                             opacity: createMachineButton.enabled ? 1 : 0.42
                         }
