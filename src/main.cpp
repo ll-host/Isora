@@ -12,7 +12,6 @@
 
 #include "core/AppController.h"
 #include "core/AppearanceController.h"
-#include "core/UpdateChecker.h"
 
 int main(int argc, char* argv[])
 {
@@ -46,11 +45,9 @@ int main(int argc, char* argv[])
 
     AppController controller;
     AppearanceController appearanceController;
-    UpdateChecker updateChecker;
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("App"), &controller);
     engine.rootContext()->setContextProperty(QStringLiteral("Appearance"), &appearanceController);
-    engine.rootContext()->setContextProperty(QStringLiteral("Updates"), &updateChecker);
     engine.loadFromModule(QStringLiteral("Isora"), QStringLiteral("Main"));
 
     if (engine.rootObjects().isEmpty())

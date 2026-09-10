@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 6.8 REQUIRED COMPONENTS Core Concurrent Gui Qml Quick QuickControls2 Network Xml)
+find_package(Qt6 6.8 REQUIRED COMPONENTS Core Concurrent Gui Qml Quick QuickControls2 Xml)
 if(NOT WIN32)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LIBVIRT REQUIRED IMPORTED_TARGET libvirt)
@@ -40,10 +40,6 @@ add_library(isora-core STATIC
     src/core/LibvirtManager.h
     src/core/RenderDevice.cpp
     src/core/RenderDevice.h
-    src/core/ReleaseVersion.cpp
-    src/core/ReleaseVersion.h
-    src/core/UpdateChecker.cpp
-    src/core/UpdateChecker.h
 )
 
 target_include_directories(isora-core PUBLIC src)
@@ -51,7 +47,6 @@ target_link_libraries(isora-core PUBLIC
     Qt6::Core
     Qt6::Concurrent
     Qt6::Gui
-    Qt6::Network
     Qt6::Xml
 )
 if(NOT WIN32)
@@ -156,15 +151,6 @@ if(ISORA_DEPLOY_RUNTIME)
 endif()
 if(BUILD_TESTING)
     find_package(Qt6 6.8 REQUIRED COMPONENTS Test)
-    qt_add_executable(isora-version-tests
-        tests/ReleaseVersionTest.cpp
-        src/core/ReleaseVersion.cpp
-        src/core/ReleaseVersion.h
-    )
-    target_include_directories(isora-version-tests PRIVATE src)
-    target_link_libraries(isora-version-tests PRIVATE Qt6::Core Qt6::Test)
-    add_test(NAME release-version COMMAND isora-version-tests)
-
     qt_add_executable(isora-safety-tests
         tests/DomainSafetyPolicyTest.cpp
         src/core/DomainSafetyPolicy.cpp

@@ -114,37 +114,6 @@ Item {
 
             Surface {
                 Layout.fillWidth: true
-                implicitHeight: updateContent.implicitHeight + 36
-                ColumnLayout {
-                    id: updateContent
-                    anchors.fill: parent
-                    anchors.margins: 18
-                    spacing: 12
-                    RowLayout {
-                        Layout.fillWidth: true
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 4
-                            Label { text: "Обновления"; color: Theme.text; font.pixelSize: 16; font.weight: Font.DemiBold }
-                            Label { text: Updates.statusText.length > 0 ? Updates.statusText : "Alpha и beta публикуются как prerelease"; color: Theme.textSecondary; font.pixelSize: 12 }
-                        }
-                        ActionButton { text: "Проверить"; enabled: !Updates.checking; onClicked: Updates.checkNow() }
-                        ActionButton { visible: Updates.updateAvailable; text: "Открыть релиз"; accent: true; onClicked: Updates.openReleasePage() }
-                    }
-                    RowLayout {
-                        spacing: 8
-                        Label { text: "Канал"; color: Theme.textSecondary; font.pixelSize: 12; Layout.preferredWidth: 96 }
-                        ActionButton { text: "Preview"; accent: Updates.channel === "preview"; onClicked: Updates.channel = "preview" }
-                        ActionButton { text: "Stable"; accent: Updates.channel === "stable"; onClicked: Updates.channel = "stable" }
-                        Item { Layout.fillWidth: true }
-                        Label { text: "Проверять автоматически"; color: Theme.text; font.pixelSize: 13 }
-                        AppSwitch { checked: Updates.automaticChecks; onToggled: Updates.automaticChecks = checked }
-                    }
-                }
-            }
-
-            Surface {
-                Layout.fillWidth: true
                 implicitHeight: machineDefaults.implicitHeight + 36
                 ColumnLayout {
                     id: machineDefaults
