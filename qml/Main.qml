@@ -142,16 +142,22 @@ ApplicationWindow {
                         Layout.preferredHeight: window.compactNavigation ? 44 : 48
                         text: "Создать машину"
                         enabled: App.connected && !App.busy
+                        padding: 0
+                        leftInset: 0
+                        rightInset: 0
+                        topInset: 0
+                        bottomInset: 0
                         onClicked: {
                             window.currentPage = 0
                             machinesPage.openCreateDialog()
                         }
-                        contentItem: RowLayout {
-                            spacing: 10
-                            Item { Layout.fillWidth: true }
-                            Label { text: "+"; color: Theme.accentText; font.pixelSize: 20; font.weight: Font.Medium }
-                            Label { text: createMachineButton.text; color: Theme.accentText; font.pixelSize: 12; font.weight: Font.DemiBold }
-                            Item { Layout.fillWidth: true }
+                        contentItem: Item {
+                            RowLayout {
+                                anchors.centerIn: parent
+                                spacing: 10
+                                Label { text: "+"; color: Theme.accentText; font.pixelSize: 20; font.weight: Font.Medium }
+                                Label { text: createMachineButton.text; color: Theme.accentText; font.pixelSize: 12; font.weight: Font.DemiBold }
+                            }
                         }
                         background: Rectangle {
                             radius: 15
