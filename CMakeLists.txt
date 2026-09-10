@@ -73,16 +73,12 @@ qt_add_qml_module(isora
         qml/Main.qml
         qml/components/ActionButton.qml
         qml/components/AppCheckBox.qml
-        qml/components/AppDialog.qml
-        qml/components/AppMenu.qml
-        qml/components/AppMenuItem.qml
         qml/components/AppProgress.qml
         qml/components/AppSpinBox.qml
         qml/components/AppSwitch.qml
         qml/components/AppTextField.qml
         qml/components/AppToolTip.qml
         qml/components/EmptyState.qml
-        qml/components/IconButton.qml
         qml/components/NavigationItem.qml
         qml/components/PageHeader.qml
         qml/components/StatusBadge.qml

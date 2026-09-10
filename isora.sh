@@ -160,26 +160,34 @@ run_local_tests() {
 capture_ui_preview() {
     configure_development_build || return 1
 
-    local preview_dir config_dir preview
+    local preview_dir config_dir name
+    local -a command
     preview_dir="${DIST_DIR}/previews"
-    preview="${preview_dir}/material3-dark.png"
     config_dir="$(mktemp -d)" || return 1
     mkdir -p "$preview_dir" || {
         rmdir -- "$config_dir"
         return 1
     }
 
-    if ! XDG_CONFIG_HOME="$config_dir" QT_QPA_PLATFORM=offscreen QSG_RHI_BACKEND=software \
-        "${PROJECT_ROOT}/build/isora" --width 1420 --height 860 --page machines --screenshot "$preview"; then
-        rm -rf -- "$config_dir"
-        return 1
-    fi
+    for name in machines create machine-settings images settings; do
+        command=("${PROJECT_ROOT}/build/isora" --width 1420 --height 860 --screenshot "${preview_dir}/${name}.png")
+        case "$name" in
+            create|machine-settings) command+=(--dialog "$name") ;;
+            images|settings) command+=(--page "$name") ;;
+            machines) command+=(--page machines) ;;
+        esac
+        if ! XDG_CONFIG_HOME="$config_dir" QT_QPA_PLATFORM=offscreen QSG_RHI_BACKEND=software "${command[@]}"; then
+            rm -rf -- "$config_dir"
+            return 1
+        fi
+        [[ -s "${preview_dir}/${name}.png" ]] || {
+            rm -rf -- "$config_dir"
+            fail "снимок интерфейса ${name} не был создан"
+            return 1
+        }
+    done
     rm -rf -- "$config_dir"
-    [[ -s "$preview" ]] || {
-        fail 'снимок интерфейса не был создан'
-        return 1
-    }
-    printf '%sСнимок интерфейса:%s %s\n' "$GREEN" "$RESET" "$preview"
+    printf '%sСнимки интерфейса:%s %s\n' "$GREEN" "$RESET" "$preview_dir"
 }
 
 verify_package_state() {

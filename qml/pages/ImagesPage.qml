@@ -10,6 +10,7 @@ Item {
     property bool compact: false
     property var selectedImage: null
     property string testDialogName: ""
+    property bool confirmingRemoval: false
 
     Component.onCompleted: Qt.callLater(root.openTestDialogIfReady)
     Connections {
@@ -24,38 +25,6 @@ Item {
         onAccepted: App.importIso(selectedFile)
     }
 
-    AppDialog {
-        id: removeDialog
-        anchors.centerIn: parent
-        width: Math.min(440, root.width - 48)
-        modal: true
-        title: "Удалить ISO-образ?"
-        standardButtons: Dialog.NoButton
-        contentItem: ColumnLayout {
-            spacing: 18
-            Label {
-                Layout.fillWidth: true
-                text: root.selectedImage ? "Файл «" + root.selectedImage.name + "» будет удалён из хранилища. Созданные машины останутся на месте." : ""
-                color: Theme.textSecondary
-                wrapMode: Text.WordWrap
-                font.pixelSize: 13
-            }
-            RowLayout {
-                Layout.fillWidth: true
-                Item { Layout.fillWidth: true }
-                ActionButton { text: "Отмена"; onClicked: removeDialog.close() }
-                ActionButton {
-                    text: "Удалить"
-                    danger: true
-                    onClicked: {
-                        App.removeIso(root.selectedImage.id)
-                        removeDialog.close()
-                    }
-                }
-            }
-        }
-    }
-
     ColumnLayout {
         anchors.fill: parent
         anchors.topMargin: root.compact ? 24 : 0
@@ -66,6 +35,25 @@ Item {
             Layout.fillWidth: true
             title: "ISO-образы"
             description: "Установочные образы в локальном хранилище Isora"
+        }
+
+        Surface {
+            Layout.fillWidth: true
+            implicitHeight: 112
+            visible: root.confirmingRemoval && root.selectedImage !== null
+            color: Theme.dangerSurface
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: 18
+                spacing: 14
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Label { text: "Удалить ISO-образ?"; color: Theme.text; font.pixelSize: 15; font.weight: Font.DemiBold }
+                    Label { Layout.fillWidth: true; text: root.selectedImage ? "Файл «" + root.selectedImage.name + "» будет удалён из хранилища. Машины останутся на месте." : ""; color: Theme.textSecondary; font.pixelSize: 11; wrapMode: Text.WordWrap }
+                }
+                ActionButton { text: "Отмена"; onClicked: root.confirmingRemoval = false }
+                ActionButton { text: "Удалить"; danger: true; enabled: !App.busy; onClicked: { App.removeIso(root.selectedImage.id); root.confirmingRemoval = false } }
+            }
         }
 
         Button {
@@ -161,23 +149,7 @@ Item {
                         color: Theme.textMuted
                         font.pixelSize: 9
                     }
-                    IconButton {
-                        text: "Действия с ISO-образом"
-                        iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/more.svg"
-                        onClicked: imageMenu.open()
-                        AppMenu {
-                            id: imageMenu
-                            y: parent.height
-                            AppMenuItem {
-                                text: "Удалить ISO-образ"
-                                enabled: !App.busy
-                                onTriggered: {
-                                    root.selectedImage = modelData
-                                    removeDialog.open()
-                                }
-                            }
-                        }
-                    }
+                    ActionButton { text: "Удалить"; danger: true; enabled: !App.busy; onClicked: { root.selectedImage = modelData; root.confirmingRemoval = true } }
                 }
             }
 
@@ -197,9 +169,9 @@ Item {
     }
 
     function openTestDialogIfReady() {
-        if (root.testDialogName === "delete-image" && App.images.length > 0 && !removeDialog.isOpen) {
+        if (root.testDialogName === "delete-image" && App.images.length > 0) {
             root.selectedImage = App.images[0]
-            removeDialog.open()
+            root.confirmingRemoval = true
         }
     }
 }

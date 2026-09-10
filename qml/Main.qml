@@ -47,40 +47,11 @@ ApplicationWindow {
             toastText.text = text
             toast.open()
         }
-        function onMessageChanged() {
-            if (App.message.length > 0)
-                errorDialog.open()
-        }
     }
 
     Shortcut {
         sequences: [StandardKey.Find]
         onActivated: searchField.forceActiveFocus()
-    }
-
-    AppDialog {
-        id: errorDialog
-        anchors.centerIn: parent
-        width: Math.min(520, window.width - 60)
-        modal: true
-        title: "Не удалось выполнить действие"
-        standardButtons: Dialog.NoButton
-        onClosed: App.clearMessage()
-        contentItem: ColumnLayout {
-            spacing: 16
-            Label {
-                Layout.fillWidth: true
-                text: App.message
-                color: Theme.text
-                wrapMode: Text.WordWrap
-                font.pixelSize: 13
-            }
-            RowLayout {
-                Layout.fillWidth: true
-                Item { Layout.fillWidth: true }
-                ActionButton { text: "Закрыть"; onClicked: errorDialog.close() }
-            }
-        }
     }
 
     Popup {
@@ -137,6 +108,22 @@ ApplicationWindow {
                 }
                 Label { text: "Isora"; color: Theme.text; font.pixelSize: 14; font.weight: Font.DemiBold }
                 Item { Layout.fillWidth: true }
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: visible ? 58 : 0
+            visible: App.message.length > 0
+            color: Theme.dangerSurface
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 20
+                anchors.rightMargin: 12
+                spacing: 12
+                Label { text: "!"; color: Theme.danger; font.pixelSize: 18; font.weight: Font.Bold }
+                Label { Layout.fillWidth: true; text: App.message; color: Theme.dangerText; font.pixelSize: 12; elide: Text.ElideRight }
+                ActionButton { text: "Закрыть"; onClicked: App.clearMessage() }
             }
         }
 
@@ -248,7 +235,7 @@ ApplicationWindow {
                             onClicked: {
                                 window.selectedMachineId = modelData.id
                                 window.currentPage = 0
-                                machinesPage.tabIndex = 0
+                                machinesPage.showOverview()
                             }
                             contentItem: RowLayout {
                                 spacing: 10
@@ -335,7 +322,7 @@ ApplicationWindow {
                         count: window.selectedMachine ? window.selectedMachine.snapshots : 0
                         iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"
                         enabled: window.selectedMachine !== null
-                        selected: window.currentPage === 0 && machinesPage.tabIndex === 2
+                        selected: window.currentPage === 0 && machinesPage.route === "snapshots"
                         onClicked: {
                             window.currentPage = 0
                             machinesPage.showSnapshots()
@@ -402,7 +389,7 @@ ApplicationWindow {
                     onOpenMachine: function(machineId) {
                         window.selectedMachineId = machineId
                         window.currentPage = 0
-                        machinesPage.tabIndex = 0
+                        machinesPage.showOverview()
                     }
                 }
             }
