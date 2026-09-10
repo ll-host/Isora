@@ -56,7 +56,6 @@ Item {
             PageHeader {
                 visible: !root.compact
                 title: "Настройки"
-                description: App.platformName + " · версия " + App.version
             }
 
             Surface {
@@ -66,24 +65,18 @@ Item {
                     id: appearanceContent
                     anchors.fill: parent
                     anchors.margins: 18
-                    spacing: 14
-                    Label { text: "Material 3 Dark"; color: Theme.text; font.pixelSize: 16; font.weight: Font.DemiBold }
-                    Label { text: "Тёмная динамическая цветовая схема Material You"; color: Theme.textMuted; font.pixelSize: 11 }
-                    Label { text: "Акцентный цвет"; color: Theme.text; font.pixelSize: 14; font.weight: Font.DemiBold }
-                    Label { text: "Применяется к кнопкам, выделению и переключателям"; color: Theme.textMuted; font.pixelSize: 10 }
-                    RowLayout {
+                    spacing: 12
+                    Label { text: "Акцент"; color: Theme.text; font.pixelSize: 16; font.weight: Font.DemiBold }
+                    GridLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        columns: width >= 760 ? 5 : (width >= 480 ? 3 : 2)
+                        columnSpacing: 10
+                        rowSpacing: 10
                         AccentChoice { Layout.fillWidth: true; mode: "mint"; title: "Мятный"; swatchColor: "#9FE0B4" }
                         AccentChoice { Layout.fillWidth: true; mode: "teal"; title: "Бирюзовый"; swatchColor: "#168F91" }
                         AccentChoice { Layout.fillWidth: true; mode: "violet"; title: "Фиолетовый"; swatchColor: "#7767E8" }
                         AccentChoice { Layout.fillWidth: true; mode: "blue"; title: "Синий"; swatchColor: "#4D86E8" }
                         AccentChoice { Layout.fillWidth: true; mode: "amber"; title: "Янтарный"; swatchColor: "#C77B22" }
-                    }
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Label { Layout.fillWidth: true; text: "Уменьшить движение интерфейса"; color: Theme.text; font.pixelSize: 12 }
-                        AppSwitch { checked: Appearance.reducedMotion; onToggled: Appearance.reducedMotion = checked }
                     }
                 }
             }
@@ -261,36 +254,40 @@ Item {
         property string mode: "mint"
         property string title: ""
         property color swatchColor: "#9FE0B4"
-        implicitHeight: 68
+        implicitHeight: 54
         onClicked: Appearance.accentMode = mode
-        contentItem: ColumnLayout {
-            spacing: 6
+        leftPadding: 12
+        rightPadding: 12
+        contentItem: RowLayout {
+            spacing: 10
             Rectangle {
-                Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: 34
-                Layout.preferredHeight: 34
-                radius: 17
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                radius: 13
                 color: accentChoice.swatchColor
                 Label {
                     anchors.centerIn: parent
                     visible: Appearance.accentMode === accentChoice.mode
                     text: "✓"
-                    color: "#00391F"
-                    font.pixelSize: 14
+                    color: Theme.contrastText(accentChoice.swatchColor)
+                    font.pixelSize: 12
                     font.weight: Font.Bold
                 }
             }
             Label {
-                Layout.alignment: Qt.AlignHCenter
+                Layout.fillWidth: true
                 text: accentChoice.title
-                color: Theme.textMuted
-                font.pixelSize: 8
+                color: Theme.text
+                font.pixelSize: 11
+                font.weight: Appearance.accentMode === accentChoice.mode ? Font.DemiBold : Font.Normal
+                elide: Text.ElideRight
             }
         }
         background: Rectangle {
-            radius: 11
-            color: Appearance.accentMode === accentChoice.mode ? Theme.surfaceHover : (accentChoice.hovered ? Theme.surface : "transparent")
-            border.color: Appearance.accentMode === accentChoice.mode ? Theme.border : "transparent"
+            radius: 14
+            color: accentChoice.hovered ? Theme.surfaceHover : Theme.surfaceRaised
+            border.width: Appearance.accentMode === accentChoice.mode ? 2 : 1
+            border.color: Appearance.accentMode === accentChoice.mode ? accentChoice.swatchColor : Theme.border
         }
     }
 

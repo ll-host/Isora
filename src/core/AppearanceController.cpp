@@ -58,11 +58,6 @@ QColor AppearanceController::accent() const
     return QColor(QStringLiteral("#4D86E8"));
 }
 
-bool AppearanceController::reducedMotion() const
-{
-    return QSettings().value(QStringLiteral("appearance/reducedMotion"), false).toBool();
-}
-
 void AppearanceController::setAccentMode(const QString& value)
 {
     const QString normalized = normalizedAccent(value);
@@ -78,13 +73,5 @@ void AppearanceController::setCustomAccent(const QColor& value)
         return;
     QSettings().setValue(QStringLiteral("appearance/customAccent"), value.name(QColor::HexRgb));
     QSettings().setValue(QStringLiteral("appearance/accent"), QStringLiteral("custom"));
-    emit appearanceChanged();
-}
-
-void AppearanceController::setReducedMotion(bool value)
-{
-    if (reducedMotion() == value)
-        return;
-    QSettings().setValue(QStringLiteral("appearance/reducedMotion"), value);
     emit appearanceChanged();
 }

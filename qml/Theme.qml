@@ -14,7 +14,7 @@ QtObject {
     readonly property color textMuted: "#89938B"
     readonly property color accent: Appearance.accent
     readonly property color accentHover: Qt.lighter(accent, 1.08)
-    readonly property color accentText: accentLuminance(accent) > 0.179 ? "#07110A" : "#FFFFFF"
+    readonly property color accentText: contrastText(accent)
     readonly property color accentSubtle: Qt.rgba(accent.r, accent.g, accent.b, 0.22)
     readonly property color accentBorder: Qt.rgba(accent.r, accent.g, accent.b, 0.72)
     readonly property color success: "#9FE0B4"
@@ -37,5 +37,9 @@ QtObject {
             return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4)
         }
         return 0.2126 * linear(value.r) + 0.7152 * linear(value.g) + 0.0722 * linear(value.b)
+    }
+
+    function contrastText(value) {
+        return accentLuminance(value) > 0.179 ? "#07110A" : "#FFFFFF"
     }
 }
