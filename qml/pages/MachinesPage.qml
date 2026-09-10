@@ -27,6 +27,14 @@ Item {
         if (!selectedMachine && route !== "create" && route !== "import")
             route = "overview"
     }
+    onRouteChanged: Qt.callLater(function() {
+        if (route === "create")
+            createScroll.contentY = 0
+        else if (route === "settings")
+            settingsScroll.contentY = 0
+        else if (route === "import")
+            importScroll.contentY = 0
+    })
 
     Connections {
         target: App
@@ -53,137 +61,17 @@ Item {
         anchors.fill: parent
         currentIndex: root.routeIndex(root.route)
 
-        Item {
-            Flickable {
-                anchors.fill: parent
-                visible: root.selectedMachine !== null
-                clip: true
-                contentHeight: overviewContent.implicitHeight + 64
-                boundsBehavior: Flickable.StopAtBounds
-                ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
-
-                ColumnLayout {
-                    id: overviewContent
-                    width: Math.min(1040, parent.width - 64)
-                    x: (parent.width - width) / 2
-                    y: 32
-                    spacing: 20
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 16
-                        Rectangle {
-                            Layout.preferredWidth: 64
-                            Layout.preferredHeight: 64
-                            radius: 20
-                            color: root.machineColor(root.selectedMachine ? root.selectedMachine.id : "")
-                            Label { anchors.centerIn: parent; text: root.machineInitial(); color: "white"; font.pixelSize: 22; font.weight: Font.Bold }
-                        }
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 3
-                            Label { text: "ВИРТУАЛЬНАЯ МАШИНА"; color: Theme.accent; font.pixelSize: 10; font.weight: Font.Bold; font.letterSpacing: 0.7 }
-                            Label { Layout.fillWidth: true; text: root.selectedMachine ? root.selectedMachine.name : ""; color: Theme.text; font.pixelSize: 30; font.weight: Font.DemiBold; elide: Text.ElideRight }
-                            Label { Layout.fillWidth: true; text: root.selectedMachine ? root.selectedMachine.resources : ""; color: Theme.textMuted; font.pixelSize: 12; elide: Text.ElideRight }
-                        }
-                        ActionButton { text: "Консоль"; enabled: root.selectedMachine && root.selectedMachine.running && !App.busy; onClicked: App.openConsole(root.selectedMachine.id) }
-                        ActionButton {
-                            text: root.selectedMachine && root.selectedMachine.running ? "Выключить" : "Запустить"
-                            accent: !(root.selectedMachine && root.selectedMachine.running)
-                            danger: root.selectedMachine && root.selectedMachine.running
-                            enabled: root.selectedMachine && !App.busy
-                            onClicked: root.selectedMachine.running ? App.shutdownMachine(root.selectedMachine.id) : App.startMachine(root.selectedMachine.id)
-                        }
-                    }
-
-                    InlineConfirmation {
-                        Layout.fillWidth: true
-                        visible: root.pendingAction === "force-stop" || root.pendingAction === "delete-machine"
-                        title: root.pendingAction === "force-stop" ? "Принудительно остановить машину?" : "Удалить машину?"
-                        detail: root.pendingAction === "force-stop" ? "Несохранённые данные гостевой системы могут быть потеряны." : "Машина будет удалена из Isora. Это действие нельзя отменить."
-                        acceptText: root.pendingAction === "force-stop" ? "Остановить" : "Удалить"
-                        danger: true
-                        extraContent: AppCheckBox { id: removeDiskCheck; visible: root.pendingAction === "delete-machine"; checked: true; text: "Удалить виртуальный диск" }
-                        onCancelled: root.pendingAction = ""
-                        onAccepted: {
-                            if (root.pendingAction === "force-stop")
-                                App.forceStopMachine(root.selectedMachine.id)
-                            else
-                                App.deleteMachine(root.selectedMachine.id, removeDiskCheck.checked)
-                        }
-                    }
-
-                    GridLayout {
-                        Layout.fillWidth: true
-                        columns: width >= 760 ? 4 : 2
-                        columnSpacing: 12
-                        rowSpacing: 12
-                        MetricCard { title: "Состояние"; value: root.selectedMachine ? root.selectedMachine.state : "—"; highlighted: root.selectedMachine && root.selectedMachine.running }
-                        MetricCard { title: "Память"; value: root.selectedMachine ? root.memoryText(root.selectedMachine.memoryMiB) : "—" }
-                        MetricCard { title: "Процессоры"; value: root.selectedMachine ? String(root.selectedMachine.cpuCount) : "—" }
-                        MetricCard { title: "Диск"; value: root.selectedMachine ? root.selectedMachine.diskGiB + " ГиБ" : "—" }
-                    }
-
-                    SectionHeading { title: "Управление"; description: "Все действия с машиной сгруппированы по назначению" }
-                    GridLayout {
-                        Layout.fillWidth: true
-                        columns: width >= 760 ? 2 : 1
-                        columnSpacing: 12
-                        rowSpacing: 12
-                        NavigationCard { title: "Параметры"; description: "Ресурсы, режим экрана и графика"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"; onClicked: root.openSettings() }
-                        NavigationCard { title: "Снимки состояния"; description: root.selectedMachine ? root.selectedMachine.snapshots + " " + root.snapshotWord(root.selectedMachine.snapshots) : "Точки восстановления"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"; onClicked: root.showSnapshots() }
-                        NavigationCard { title: "Резервные копии"; description: "Независимые проверяемые копии диска"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/backup.svg"; enabled: root.selectedMachine && !root.selectedMachine.running; onClicked: root.openBackups() }
-                        NavigationCard { title: root.selectedMachine && root.selectedMachine.running ? "Открыть экран" : "Запустить с диска"; description: root.selectedMachine && root.selectedMachine.running ? "Подключиться через virt-viewer" : "Запустить без установочного ISO"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; onClicked: root.selectedMachine.running ? App.openDisplay(root.selectedMachine.id) : App.startMachineFromDisk(root.selectedMachine.id) }
-                    }
-
-                    SectionHeading { title: "Сведения"; description: "Текущая конфигурация и расположение данных" }
-                    Surface {
-                        Layout.fillWidth: true
-                        implicitHeight: infoColumn.implicitHeight + 32
-                        ColumnLayout {
-                            id: infoColumn
-                            anchors.fill: parent
-                            anchors.margins: 16
-                            spacing: 0
-                            InfoRow { title: "Загрузка"; value: root.selectedMachine && root.selectedMachine.useEfi ? "UEFI" : "BIOS" }
-                            InfoRow { title: "Режим экрана"; value: root.selectedMachine ? root.displayModeText(root.selectedMachine.displayMode) : "—" }
-                            InfoRow { title: "Графика"; value: root.selectedMachine && root.selectedMachine.use3d ? "VirtIO с 3D" : "VirtIO" }
-                            InfoRow { title: "Файл диска"; value: root.selectedMachine ? root.selectedMachine.diskPath : "—"; mono: true }
-                        }
-                    }
-
-                    SectionHeading { title: "Опасная зона"; description: "Действия, которые могут привести к потере данных" }
-                    Surface {
-                        Layout.fillWidth: true
-                        implicitHeight: 88
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: 16
-                            spacing: 10
-                            ActionButton { visible: root.selectedMachine && root.selectedMachine.running; text: "Перезагрузить"; enabled: !App.busy; onClicked: App.resetMachine(root.selectedMachine.id) }
-                            ActionButton { visible: root.selectedMachine && root.selectedMachine.running; text: "Остановить принудительно"; danger: true; enabled: !App.busy; onClicked: root.pendingAction = "force-stop" }
-                            Item { Layout.fillWidth: true }
-                            ActionButton { visible: root.selectedMachine && !root.selectedMachine.running; text: "Удалить машину"; danger: true; enabled: !App.busy; onClicked: root.pendingAction = "delete-machine" }
-                        }
-                    }
-                }
-            }
-
-            ColumnLayout {
-                anchors.centerIn: parent
-                visible: root.selectedMachine === null
-                spacing: 18
-                EmptyState { iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; title: "Машин пока нет"; description: "Создайте первую машину из ISO-образа или подключите существующий QCOW2-диск." }
-                RowLayout {
-                    Layout.alignment: Qt.AlignHCenter
-                    ActionButton { text: "Создать машину"; accent: true; enabled: App.connected && !App.busy; onClicked: root.openCreateDialog() }
-                    ActionButton { text: "Подключить диск"; enabled: App.connected && !App.busy; onClicked: root.openImport() }
-                }
-            }
+        MachineOverview {
+            id: overviewPage
+            machine: root.selectedMachine
+            onOpenSettings: root.openSettings()
+            onOpenSnapshots: root.showSnapshots()
+            onOpenBackups: root.openBackups()
         }
 
         Item {
             Flickable {
+                id: createScroll
                 anchors.fill: parent
                 clip: true
                 contentHeight: createContent.implicitHeight + 64
@@ -216,19 +104,23 @@ Item {
                     Surface {
                         Layout.fillWidth: true
                         implicitHeight: createResources.implicitHeight + 40
-                        GridLayout {
+                        RowLayout {
                             id: createResources
                             anchors.fill: parent
                             anchors.margins: 20
-                            columns: width >= 680 ? 3 : 1
-                            columnSpacing: 16
-                            rowSpacing: 8
-                            FieldLabel { text: "Оперативная память" }
-                            FieldLabel { text: "Процессоры" }
-                            FieldLabel { text: "Максимальный размер диска" }
-                            AppSpinBox { id: createMemory; Layout.fillWidth: true; from: 1024; to: 262144; stepSize: 1024; value: App.defaultMemoryMiB; textFromValue: function(v) { return root.memoryText(v) } }
-                            AppSpinBox { id: createCpu; Layout.fillWidth: true; from: 1; to: 256; value: App.defaultCpuCount }
-                            AppSpinBox { id: createDisk; Layout.fillWidth: true; from: 8; to: 2048; value: App.defaultDiskGiB; textFromValue: function(v) { return v + " ГиБ" } }
+                            spacing: 16
+                            FormField {
+                                label: "Оперативная память"
+                                AppSpinBox { id: createMemory; Layout.fillWidth: true; from: 1024; to: 262144; stepSize: 1024; value: App.defaultMemoryMiB; textFromValue: function(v) { return root.memoryText(v) } }
+                            }
+                            FormField {
+                                label: "Процессоры"
+                                AppSpinBox { id: createCpu; Layout.fillWidth: true; from: 1; to: 256; value: App.defaultCpuCount }
+                            }
+                            FormField {
+                                label: "Максимальный размер диска"
+                                AppSpinBox { id: createDisk; Layout.fillWidth: true; from: 8; to: 2048; value: App.defaultDiskGiB; textFromValue: function(v) { return v + " ГиБ" } }
+                            }
                         }
                     }
                     Surface {
@@ -255,6 +147,7 @@ Item {
 
         Item {
             Flickable {
+                id: settingsScroll
                 anchors.fill: parent
                 clip: true
                 contentHeight: settingsContent.implicitHeight + 64
@@ -281,19 +174,23 @@ Item {
                     Surface {
                         Layout.fillWidth: true
                         implicitHeight: settingsResources.implicitHeight + 40
-                        GridLayout {
+                        RowLayout {
                             id: settingsResources
                             anchors.fill: parent
                             anchors.margins: 20
-                            columns: width >= 680 ? 3 : 1
-                            columnSpacing: 16
-                            rowSpacing: 8
-                            FieldLabel { text: "Оперативная память" }
-                            FieldLabel { text: "Виртуальные процессоры" }
-                            FieldLabel { text: "Максимальный размер диска" }
-                            AppSpinBox { id: settingsMemory; Layout.fillWidth: true; from: 1024; to: 262144; stepSize: 1024; textFromValue: function(v) { return root.memoryText(v) } }
-                            AppSpinBox { id: settingsCpu; Layout.fillWidth: true; from: 1; to: 256 }
-                            AppSpinBox { id: settingsDisk; Layout.fillWidth: true; to: 2048; textFromValue: function(v) { return v + " ГиБ" } }
+                            spacing: 16
+                            FormField {
+                                label: "Оперативная память"
+                                AppSpinBox { id: settingsMemory; Layout.fillWidth: true; from: 1024; to: 262144; stepSize: 1024; textFromValue: function(v) { return root.memoryText(v) } }
+                            }
+                            FormField {
+                                label: "Виртуальные процессоры"
+                                AppSpinBox { id: settingsCpu; Layout.fillWidth: true; from: 1; to: 256 }
+                            }
+                            FormField {
+                                label: "Максимальный размер диска"
+                                AppSpinBox { id: settingsDisk; Layout.fillWidth: true; to: 2048; textFromValue: function(v) { return v + " ГиБ" } }
+                            }
                         }
                     }
                     SectionHeading { title: "Экран и GPU"; description: "Режим окна гостя и графический адаптер" }
@@ -436,6 +333,7 @@ Item {
 
         Item {
             Flickable {
+                id: importScroll
                 anchors.fill: parent
                 clip: true
                 contentHeight: importContent.implicitHeight + 64
@@ -463,15 +361,17 @@ Item {
                                 AppTextField { Layout.fillWidth: true; readOnly: true; text: root.importDiskUrl.toString().length > 0 ? root.localPath(root.importDiskUrl) : "Файл не выбран" }
                                 ActionButton { text: "Выбрать файл"; onClicked: importDiskPicker.open() }
                             }
-                            GridLayout {
+                            RowLayout {
                                 Layout.fillWidth: true
-                                columns: 2
-                                columnSpacing: 16
-                                rowSpacing: 8
-                                FieldLabel { text: "Оперативная память" }
-                                FieldLabel { text: "Процессоры" }
-                                AppSpinBox { id: importMemory; Layout.fillWidth: true; from: 1024; to: 262144; stepSize: 1024; value: App.defaultMemoryMiB; textFromValue: function(v) { return root.memoryText(v) } }
-                                AppSpinBox { id: importCpu; Layout.fillWidth: true; from: 1; to: 256; value: App.defaultCpuCount }
+                                spacing: 16
+                                FormField {
+                                    label: "Оперативная память"
+                                    AppSpinBox { id: importMemory; Layout.fillWidth: true; from: 1024; to: 262144; stepSize: 1024; value: App.defaultMemoryMiB; textFromValue: function(v) { return root.memoryText(v) } }
+                                }
+                                FormField {
+                                    label: "Процессоры"
+                                    AppSpinBox { id: importCpu; Layout.fillWidth: true; from: 1; to: 256; value: App.defaultCpuCount }
+                                }
                             }
                         }
                     }
@@ -496,6 +396,15 @@ Item {
 
     component FieldLabel: Label { color: Theme.textSecondary; font.pixelSize: 12; font.weight: Font.Medium }
 
+    component FormField: ColumnLayout {
+        property string label: ""
+        default property alias fieldContent: fieldSlot.data
+        Layout.fillWidth: true
+        spacing: 8
+        FieldLabel { text: parent.label }
+        ColumnLayout { id: fieldSlot; Layout.fillWidth: true }
+    }
+
     component BackHeader: RowLayout {
         id: backHeader
         property string title: ""
@@ -509,63 +418,6 @@ Item {
             spacing: 3
             Label { Layout.fillWidth: true; text: backHeader.title; color: Theme.text; font.pixelSize: 26; font.weight: Font.DemiBold; elide: Text.ElideRight }
             Label { Layout.fillWidth: true; text: backHeader.description; color: Theme.textMuted; font.pixelSize: 11; elide: Text.ElideMiddle }
-        }
-    }
-
-    component MetricCard: Surface {
-        id: metricCard
-        property string title: ""
-        property string value: ""
-        property bool highlighted: false
-        Layout.fillWidth: true
-        implicitHeight: 96
-        color: highlighted ? Theme.accentSubtle : Theme.surface
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 16
-            spacing: 5
-            Label { text: metricCard.title; color: Theme.textMuted; font.pixelSize: 10 }
-            Label { text: metricCard.value; color: metricCard.highlighted ? Theme.accent : Theme.text; font.pixelSize: 18; font.weight: Font.DemiBold }
-        }
-    }
-
-    component NavigationCard: Button {
-        id: navigationCard
-        property string title: ""
-        property string description: ""
-        property url iconSource
-        Layout.fillWidth: true
-        implicitHeight: 92
-        leftPadding: 18
-        rightPadding: 18
-        contentItem: RowLayout {
-            spacing: 14
-            Rectangle { Layout.preferredWidth: 44; Layout.preferredHeight: 44; radius: 14; color: Theme.accentSubtle; Image { anchors.centerIn: parent; width: 22; height: 22; source: navigationCard.iconSource } }
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 4
-                Label { text: navigationCard.title; color: Theme.text; font.pixelSize: 14; font.weight: Font.DemiBold }
-                Label { Layout.fillWidth: true; text: navigationCard.description; color: Theme.textMuted; font.pixelSize: 10; elide: Text.ElideRight }
-            }
-            Label { text: "›"; color: Theme.textSecondary; font.pixelSize: 22 }
-        }
-        background: Rectangle { radius: Theme.radiusCard; color: navigationCard.hovered ? Theme.surfaceHover : Theme.surface; border.width: navigationCard.activeFocus ? 2 : 0; border.color: Theme.accent }
-    }
-
-    component InfoRow: Item {
-        id: infoRow
-        property string title: ""
-        property string value: ""
-        property bool mono: false
-        Layout.fillWidth: true
-        implicitHeight: 62
-        Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: Theme.border }
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 4
-            anchors.rightMargin: 4
-            Label { Layout.fillWidth: true; text: infoRow.title; color: Theme.textSecondary; font.pixelSize: 12 }
-            Label { Layout.preferredWidth: Math.min(560, parent.width * 0.62); text: infoRow.value; color: Theme.text; font.pixelSize: 11; font.family: infoRow.mono ? "monospace" : ""; elide: Text.ElideMiddle; horizontalAlignment: Text.AlignRight }
         }
     }
 
@@ -637,15 +489,11 @@ Item {
         if (testDialogName === "machine-settings") openSettings()
         else if (testDialogName === "backups") openBackups()
         else if (testDialogName === "snapshots") showSnapshots()
-        else if (testDialogName === "delete-machine") pendingAction = "delete-machine"
-        else if (testDialogName === "force-stop") pendingAction = "force-stop"
+        else if (testDialogName === "delete-machine") overviewPage.requestAction("delete-machine")
+        else if (testDialogName === "force-stop") overviewPage.requestAction("force-stop")
     }
 
     function memoryText(value) { if (value <= 0) return "—"; return value % 1024 === 0 ? value / 1024 + " ГиБ" : value + " МиБ" }
-    function displayModeText(value) { if (value === "fullscreen") return "Полный экран"; if (value === "borderless") return "Без рамок"; return "В окне" }
-    function machineInitial() { return selectedMachine && selectedMachine.name.length > 0 ? selectedMachine.name.charAt(0).toUpperCase() : "VM" }
-    function machineColor(id) { const colors = ["#357A50", "#586F4F", "#6D5E3F", "#53636F"]; let hash = 0; for (let index = 0; index < id.length; ++index) hash = (hash + id.charCodeAt(index)) % colors.length; return colors[hash] }
-    function snapshotWord(count) { const lastTwo = count % 100; const last = count % 10; if (lastTwo >= 11 && lastTwo <= 14) return "снимков"; if (last === 1) return "снимок"; if (last >= 2 && last <= 4) return "снимка"; return "снимков" }
     function gpuIndex(id) { for (let index = 0; index < App.hostGpuOptions.length; ++index) { if (App.hostGpuOptions[index].id === id) return index } return 0 }
     function formatBackupDate(value) { const date = new Date(value); return isNaN(date.getTime()) ? "Дата неизвестна" : date.toLocaleString(Qt.locale("ru_RU"), Locale.ShortFormat) }
     function localPath(url) { return decodeURIComponent(url.toString().replace(/^file:\/\//, "")) }

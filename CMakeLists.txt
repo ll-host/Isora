@@ -86,6 +86,7 @@ qt_add_qml_module(isora
         qml/pages/DiagnosticsPage.qml
         qml/pages/DisksPage.qml
         qml/pages/ImagesPage.qml
+        qml/pages/MachineOverview.qml
         qml/pages/MachinesPage.qml
         qml/pages/SettingsPage.qml
     RESOURCES
