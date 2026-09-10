@@ -44,7 +44,7 @@ Item {
                 root.importDiskUrl = ""
             }
         }
-        function onMachinesChanged() { root.openTestDialogIfReady() }
+        function onMachinesChanged() { Qt.callLater(root.openTestDialogIfReady) }
     }
 
     AppDialog {
@@ -1052,9 +1052,8 @@ Item {
     }
 
     function openTestDialogIfReady() {
-        if (App.machines.length === 0)
+        if (root.testDialogName.length === 0 || !root.selectedMachine)
             return
-        root.selectedMachine = App.machines[0]
         if (root.testDialogName === "machine-settings" && !machineSettingsDialog.isOpen)
             machineSettingsDialog.open()
         else if (root.testDialogName === "backups" && !backupsDialog.isOpen)

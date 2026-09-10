@@ -257,7 +257,7 @@ install_arch_package() {
         return 1
     fi
 
-    installed_name="$(pacman -Qp --print-format '%n' "$temporary" 2>/dev/null)" || {
+    installed_name="$(pacman -Qpq "$temporary" 2>/dev/null)" || {
         unlink -- "$temporary"
         fail 'скачанный файл не является корректным pacman-пакетом'
         return 1
@@ -279,7 +279,7 @@ install_arch_package() {
     mv -f -- "$temporary" "$package" || return 1
 
     printf '%sСохранено:%s %s\n' "$GREEN" "$RESET" "$package"
-    sudo pacman -U --needed "$package"
+    sudo pacman -U "$package"
 }
 
 ensure_release_state() {

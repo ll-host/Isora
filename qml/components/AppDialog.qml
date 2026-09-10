@@ -14,59 +14,43 @@ Item {
     property int padding: 18
     property int closePolicy: Popup.CloseOnEscape
     property alias contentItem: body.data
-    readonly property bool isOpen: dialogWindow.visible
-    property bool wasOpened: false
+    readonly property bool isOpen: dialogPopup.opened
 
     signal opened()
     signal closed()
 
     function open() {
-        if (!dialogWindow.visible)
-            dialogWindow.show()
-        dialogWindow.raise()
-        dialogWindow.requestActivate()
+        dialogPopup.open()
     }
 
     function close() {
-        dialogWindow.close()
+        dialogPopup.close()
     }
 
-    Window {
-        id: dialogWindow
-        transientParent: control.Window.window
+    Popup {
+        id: dialogPopup
+        parent: Overlay.overlay
+        anchors.centerIn: parent
         width: control.width
         height: control.height
-        minimumWidth: Math.min(control.width, 320)
-        minimumHeight: Math.min(control.height, 180)
-        title: control.title
-        color: Theme.surfaceRaised
-        modality: control.modal ? Qt.WindowModal : Qt.NonModal
-        flags: Qt.Window
-
-        x: transientParent ? transientParent.x + Math.round((transientParent.width - width) / 2) : 0
-        y: transientParent ? transientParent.y + Math.round((transientParent.height - height) / 2) : 0
-
-        onVisibleChanged: {
-            if (visible) {
-                control.wasOpened = true
-                control.opened()
-            } else if (control.wasOpened) {
-                control.wasOpened = false
-                control.closed()
-            }
+        padding: 0
+        modal: control.modal
+        focus: true
+        closePolicy: control.closePolicy
+        onOpened: control.opened()
+        onClosed: control.closed()
+        Overlay.modal: Rectangle {
+            color: "#99000000"
         }
 
-        Shortcut {
-            sequence: "Escape"
-            enabled: control.closePolicy !== Popup.NoAutoClose
-            onActivated: control.close()
-        }
-
-        Rectangle {
-            anchors.fill: parent
+        background: Rectangle {
             color: Theme.surfaceRaised
+            radius: Theme.radiusCard
             border.color: Theme.borderStrong
+            border.width: 1
+        }
 
+        contentItem: Item {
             Rectangle {
                 id: header
                 anchors.left: parent.left
@@ -74,7 +58,7 @@ Item {
                 anchors.top: parent.top
                 implicitHeight: 52
                 height: implicitHeight
-                color: Theme.surfaceRaised
+                color: "transparent"
 
                 Label {
                     anchors.left: parent.left
@@ -107,7 +91,7 @@ Item {
                         font: closeButton.font
                     }
                     background: Rectangle {
-                        radius: 9
+                        radius: Theme.radiusSmall
                         color: closeButton.hovered ? Theme.surfaceHover : "transparent"
                     }
                 }

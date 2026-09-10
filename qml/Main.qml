@@ -38,9 +38,7 @@ ApplicationWindow {
 
     Component.onCompleted: Qt.callLater(function() {
         ensureSelection()
-        openRequestedSurface()
     })
-    onCurrentPageChanged: Qt.callLater(openRequestedSurface)
 
     Connections {
         target: App
@@ -83,57 +81,6 @@ ApplicationWindow {
                 ActionButton { text: "Закрыть"; onClicked: errorDialog.close() }
             }
         }
-    }
-
-    AppDialog {
-        id: imagesDialog
-        anchors.centerIn: parent
-        width: Math.min(620, window.width - 72)
-        height: Math.min(510, window.height - 72)
-        modal: true
-        title: "ISO-образы"
-        standardButtons: Dialog.NoButton
-        contentItem: ImagesPage { anchors.fill: parent; compact: true; testDialogName: window.testDialog }
-    }
-
-    AppDialog {
-        id: disksDialog
-        anchors.centerIn: parent
-        width: Math.min(900, window.width - 72)
-        height: Math.min(620, window.height - 72)
-        modal: true
-        title: "Виртуальные диски"
-        standardButtons: Dialog.NoButton
-        contentItem: DisksPage {
-            anchors.fill: parent
-            onOpenMachine: function(machineId) {
-                window.selectedMachineId = machineId
-                machinesPage.tabIndex = 0
-                disksDialog.close()
-            }
-        }
-    }
-
-    AppDialog {
-        id: settingsDialog
-        anchors.centerIn: parent
-        width: Math.min(660, window.width - 72)
-        height: Math.min(620, window.height - 72)
-        modal: true
-        title: "Настройки Isora"
-        standardButtons: Dialog.NoButton
-        contentItem: SettingsPage { anchors.fill: parent; compact: true }
-    }
-
-    AppDialog {
-        id: diagnosticsDialog
-        anchors.centerIn: parent
-        width: Math.min(720, window.width - 72)
-        height: Math.min(620, window.height - 72)
-        modal: true
-        title: "Состояние локального хоста"
-        standardButtons: Dialog.NoButton
-        contentItem: DiagnosticsPage { anchors.fill: parent; compact: true }
     }
 
     Popup {
@@ -285,11 +232,12 @@ ApplicationWindow {
                         id: machineList
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Layout.maximumHeight: Math.max(72, contentHeight)
+                        Layout.minimumHeight: 80
                         model: window.filteredMachines
                         spacing: 3
                         clip: true
                         boundsBehavior: Flickable.StopAtBounds
+                        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
                         delegate: Button {
                             required property var modelData
@@ -299,6 +247,7 @@ ApplicationWindow {
                             rightPadding: 9
                             onClicked: {
                                 window.selectedMachineId = modelData.id
+                                window.currentPage = 0
                                 machinesPage.tabIndex = 0
                             }
                             contentItem: RowLayout {
@@ -368,15 +317,17 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         text: "Виртуальные диски"
                         count: App.machines.length
+                        selected: window.currentPage === 4
                         iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/drive.svg"
-                        onClicked: disksDialog.open()
+                        onClicked: window.currentPage = 4
                     }
                     SidebarButton {
                         Layout.fillWidth: true
                         text: "ISO-образы"
                         count: App.images.length
+                        selected: window.currentPage === 1
                         iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/disc.svg"
-                        onClicked: imagesDialog.open()
+                        onClicked: window.currentPage = 1
                     }
                     SidebarButton {
                         Layout.fillWidth: true
@@ -384,16 +335,19 @@ ApplicationWindow {
                         count: window.selectedMachine ? window.selectedMachine.snapshots : 0
                         iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"
                         enabled: window.selectedMachine !== null
-                        onClicked: machinesPage.showSnapshots()
+                        selected: window.currentPage === 0 && machinesPage.tabIndex === 2
+                        onClicked: {
+                            window.currentPage = 0
+                            machinesPage.showSnapshots()
+                        }
                     }
-
-                    Item { Layout.fillHeight: true }
 
                     SidebarButton {
                         Layout.fillWidth: true
                         text: "Настройки Isora"
+                        selected: window.currentPage === 3
                         iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"
-                        onClicked: settingsDialog.open()
+                        onClicked: window.currentPage = 3
                     }
 
                     Button {
@@ -402,7 +356,7 @@ ApplicationWindow {
                         implicitHeight: 51
                         leftPadding: 10
                         rightPadding: 10
-                        onClicked: diagnosticsDialog.open()
+                        onClicked: window.currentPage = 2
                         contentItem: RowLayout {
                             spacing: 10
                             Rectangle {
@@ -428,15 +382,29 @@ ApplicationWindow {
                 }
             }
 
-            MachinesPage {
-                id: machinesPage
+            StackLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                selectedMachine: window.selectedMachine
-                showCreateDialog: window.testDialog === "create" || window.testDialog === "create-settings"
-                initialCreateStep: window.testDialog === "create-settings" ? 1 : 0
-                testDialogName: window.testDialog
-                onOpenImages: imagesDialog.open()
+                currentIndex: window.currentPage
+
+                MachinesPage {
+                    id: machinesPage
+                    selectedMachine: window.selectedMachine
+                    showCreateDialog: window.testDialog === "create" || window.testDialog === "create-settings"
+                    initialCreateStep: window.testDialog === "create-settings" ? 1 : 0
+                    testDialogName: window.testDialog
+                    onOpenImages: window.currentPage = 1
+                }
+                ImagesPage { testDialogName: window.testDialog }
+                DiagnosticsPage { }
+                SettingsPage { }
+                DisksPage {
+                    onOpenMachine: function(machineId) {
+                        window.selectedMachineId = machineId
+                        window.currentPage = 0
+                        machinesPage.tabIndex = 0
+                    }
+                }
             }
         }
     }
@@ -478,16 +446,22 @@ ApplicationWindow {
         id: sidebarControl
         property int count: -1
         property url iconSource
+        property bool selected: false
         implicitHeight: 42
         leftPadding: 10
         rightPadding: 10
         contentItem: RowLayout {
             spacing: 10
             Image { Layout.preferredWidth: 18; Layout.preferredHeight: 18; source: sidebarControl.iconSource; opacity: sidebarControl.enabled ? 1 : 0.42 }
-            Label { Layout.fillWidth: true; text: sidebarControl.text; color: sidebarControl.enabled ? Theme.textSecondary : Theme.textMuted; font.pixelSize: 11 }
+            Label { Layout.fillWidth: true; text: sidebarControl.text; color: sidebarControl.enabled ? (sidebarControl.selected ? Theme.text : Theme.textSecondary) : Theme.textMuted; font.pixelSize: 11; font.weight: sidebarControl.selected ? Font.DemiBold : Font.Normal }
             Label { visible: sidebarControl.count >= 0; text: sidebarControl.count; color: Theme.textMuted; font.pixelSize: 9 }
         }
-        background: Rectangle { radius: 10; color: sidebarControl.hovered ? Theme.surfaceHover : "transparent" }
+        background: Rectangle {
+            radius: Theme.radiusControl
+            color: sidebarControl.selected ? Theme.accentSubtle : (sidebarControl.hovered ? Theme.surfaceHover : "transparent")
+            border.width: sidebarControl.activeFocus ? 2 : 0
+            border.color: Theme.accent
+        }
     }
 
     function machineById(id) {
@@ -515,12 +489,4 @@ ApplicationWindow {
         return colors[hash]
     }
 
-    function openRequestedSurface() {
-        if (currentPage === 1)
-            imagesDialog.open()
-        else if (currentPage === 2)
-            diagnosticsDialog.open()
-        else if (currentPage === 3)
-            settingsDialog.open()
-    }
 }
