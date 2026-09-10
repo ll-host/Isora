@@ -67,24 +67,18 @@ Item {
                     anchors.fill: parent
                     anchors.margins: 18
                     spacing: 14
-                    Label { text: "Тема"; color: Theme.text; font.pixelSize: 14; font.weight: Font.DemiBold }
-                    Label { text: "Цветовая схема интерфейса"; color: Theme.textMuted; font.pixelSize: 10 }
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 8
-                        ThemeChoice { Layout.fillWidth: true; mode: "dark"; title: "Тёмная"; selected: Appearance.themeMode === "dark"; onClicked: Appearance.themeMode = "dark" }
-                        ThemeChoice { Layout.fillWidth: true; mode: "light"; title: "Светлая"; selected: Appearance.themeMode === "light"; onClicked: Appearance.themeMode = "light" }
-                    }
+                    Label { text: "Material 3 Dark"; color: Theme.text; font.pixelSize: 16; font.weight: Font.DemiBold }
+                    Label { text: "Тёмная динамическая цветовая схема Material You"; color: Theme.textMuted; font.pixelSize: 11 }
                     Label { text: "Акцентный цвет"; color: Theme.text; font.pixelSize: 14; font.weight: Font.DemiBold }
                     Label { text: "Применяется к кнопкам, выделению и переключателям"; color: Theme.textMuted; font.pixelSize: 10 }
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 8
+                        AccentChoice { Layout.fillWidth: true; mode: "mint"; title: "Мятный"; swatchColor: "#9FE0B4" }
                         AccentChoice { Layout.fillWidth: true; mode: "teal"; title: "Бирюзовый"; swatchColor: "#168F91" }
                         AccentChoice { Layout.fillWidth: true; mode: "violet"; title: "Фиолетовый"; swatchColor: "#7767E8" }
                         AccentChoice { Layout.fillWidth: true; mode: "blue"; title: "Синий"; swatchColor: "#4D86E8" }
                         AccentChoice { Layout.fillWidth: true; mode: "amber"; title: "Янтарный"; swatchColor: "#C77B22" }
-                        AccentChoice { Layout.fillWidth: true; mode: "rose"; title: "Розовый"; swatchColor: "#B04A69" }
                     }
                     RowLayout {
                         Layout.fillWidth: true
@@ -293,64 +287,11 @@ Item {
         }
     }
 
-    component ThemeChoice: Button {
-        id: themeChoice
-        property string mode: "dark"
-        property string title: ""
-        property bool selected: false
-        implicitHeight: 96
-        contentItem: ColumnLayout {
-            spacing: 7
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                radius: 8
-                color: themeChoice.mode === "dark" ? "#18191D" : "#F8F9FD"
-                Rectangle {
-                    x: 7
-                    y: 7
-                    width: parent.width * 0.3
-                    height: parent.height - 14
-                    radius: 5
-                    color: themeChoice.mode === "dark" ? "#303136" : "#E1E3E8"
-                }
-                Rectangle {
-                    x: parent.width * 0.3 + 13
-                    y: 7
-                    width: parent.width * 0.7 - 20
-                    height: (parent.height - 18) / 2
-                    radius: 4
-                    color: themeChoice.mode === "dark" ? "#303136" : "#E1E3E8"
-                }
-                Rectangle {
-                    x: parent.width * 0.3 + 13
-                    y: parent.height / 2 + 2
-                    width: parent.width * 0.7 - 20
-                    height: (parent.height - 18) / 2
-                    radius: 4
-                    color: Theme.accent
-                }
-            }
-            Label {
-                text: themeChoice.title
-                color: Theme.text
-                font.pixelSize: 10
-                font.weight: Font.DemiBold
-            }
-        }
-        background: Rectangle {
-            radius: 12
-            color: themeChoice.hovered ? Theme.surfaceHover : "transparent"
-            border.width: themeChoice.selected ? 2 : 1
-            border.color: themeChoice.selected ? Theme.accent : Theme.border
-        }
-    }
-
     component AccentChoice: Button {
         id: accentChoice
-        property string mode: "blue"
+        property string mode: "mint"
         property string title: ""
-        property color swatchColor: "#4D86E8"
+        property color swatchColor: "#9FE0B4"
         implicitHeight: 68
         onClicked: Appearance.accentMode = mode
         contentItem: ColumnLayout {
@@ -365,7 +306,7 @@ Item {
                     anchors.centerIn: parent
                     visible: Appearance.accentMode === accentChoice.mode
                     text: "✓"
-                    color: "white"
+                    color: "#00391F"
                     font.pixelSize: 14
                     font.weight: Font.Bold
                 }

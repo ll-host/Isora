@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     QGuiApplication::setApplicationDisplayName(QStringLiteral("Isora"));
     QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/qt/qml/Isora/qml/assets/icons/app.svg")));
     QCoreApplication::setApplicationVersion(QStringLiteral(ISORA_VERSION));
-    QQuickStyle::setStyle(QStringLiteral("Basic"));
+    QQuickStyle::setStyle(QStringLiteral("Material"));
 
     QCommandLineParser parser;
     parser.addHelpOption();

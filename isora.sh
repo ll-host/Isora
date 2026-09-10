@@ -139,6 +139,49 @@ build_arch_package() {
     printf 'Установка: sudo pacman -U %q\n' "$package"
 }
 
+configure_development_build() {
+    require_command cmake || return 1
+    require_command ninja || return 1
+
+    cmake -S "$PROJECT_ROOT" -B "${PROJECT_ROOT}/build" -G Ninja \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DISORA_DEPLOY_RUNTIME=OFF \
+        -DBUILD_TESTING=ON || return 1
+    cmake --build "${PROJECT_ROOT}/build"
+}
+
+run_local_tests() {
+    configure_development_build || return 1
+    require_command ctest || return 1
+    ctest --test-dir "${PROJECT_ROOT}/build" --output-on-failure
+}
+
+capture_ui_preview() {
+    configure_development_build || return 1
+
+    local preview_dir config_dir preview
+    preview_dir="${DIST_DIR}/previews"
+    preview="${preview_dir}/material3-dark.png"
+    config_dir="$(mktemp -d)" || return 1
+    mkdir -p "$preview_dir" || {
+        rmdir -- "$config_dir"
+        return 1
+    }
+
+    if ! XDG_CONFIG_HOME="$config_dir" QT_QPA_PLATFORM=offscreen QSG_RHI_BACKEND=software \
+        "${PROJECT_ROOT}/build/isora" --width 1420 --height 860 --page machines --screenshot "$preview"; then
+        rm -rf -- "$config_dir"
+        return 1
+    fi
+    rm -rf -- "$config_dir"
+    [[ -s "$preview" ]] || {
+        fail 'снимок интерфейса не был создан'
+        return 1
+    }
+    printf '%sСнимок интерфейса:%s %s\n' "$GREEN" "$RESET" "$preview"
+}
+
 verify_package_state() {
     local package="$1"
     local state_file="${DIST_DIR}/.package-state"
@@ -407,6 +450,8 @@ main() {
         printf '  4. Закоммитить все изменения и отправить в GitHub\n'
         printf '  5. Подтянуть изменения из GitHub (pull --rebase)\n'
         printf '  6. Показать состояние проекта\n'
+        printf '  7. Собрать отладочную версию и запустить тесты\n'
+        printf '  8. Собрать и снять интерфейс для проверки\n'
         printf '  0. Выход\n\n'
         read -r -p 'Выберите пункт: ' choice
         case "$choice" in
@@ -416,6 +461,8 @@ main() {
             4) run_action commit_and_push ;;
             5) run_action pull_changes ;;
             6) run_action show_status ;;
+            7) run_action run_local_tests ;;
+            8) run_action capture_ui_preview ;;
             0) exit 0 ;;
             *) printf '%sНеизвестный пункт.%s\n' "$RED" "$RESET"; sleep 1 ;;
         esac

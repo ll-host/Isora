@@ -4,21 +4,21 @@
 
 ## Direction
 
-Isora is a topology console for local compute: machines, images, storage and host capabilities are presented as a calm connected system rather than a pile of generic dashboard cards. The interface borrows the exactness of virtualization diagrams and Windows 11 workstation tools, without turning into a terminal costume.
+Isora is a topology console for local compute: machines, images, storage and host capabilities are presented as a calm connected system rather than a pile of generic dashboard cards. The interface follows Material You and Material 3 while retaining the density and precision expected from a desktop virtualization tool.
 
 ## Platform expression
 
-- Windows 11 is the primary high-craft surface: system palette and accent, restrained depth, native window behavior, clear separate-guest-window controls and compact technical detail.
-- Linux inherits the same information architecture but uses flatter surfaces and exposes libvirt/KVM-specific state.
+- Arch Linux is the primary high-craft surface, with native Qt Quick behavior and explicit libvirt/KVM state.
+- The preserved Windows backend inherits the same QML information architecture and keeps clear separate-guest-window controls.
 - Layout responds to available window width; platform checks select behavior and vocabulary, never arbitrary device names.
 
 ## Materials and color
 
-- Backgrounds are layered workstation planes: window, navigation rail, work surface and elevated transient surface.
-- A single accent connects selected navigation, active topology nodes, focus and progress. Auto uses the host system highlight; manual presets are allowed.
+- Backgrounds use Material 3 dark surface containers: window, navigation rail, work surface and elevated transient surface.
+- A single accent connects selected navigation, active topology nodes, focus and progress. The default seed color is `#9FE0B4`; manual presets remain available.
 - Status colors are semantic and always paired with text or iconography.
-- Dark and light themes are equal first-class modes. System is the default.
-- Borders separate adjacent planes; shadows are reserved for floating dialogs, menus and operation overlays.
+- Material 3 Dark is the application color scheme.
+- Tonal elevation separates planes; outlines are reserved for boundaries, focus and selected states.
 
 ## Typography
 
@@ -46,10 +46,10 @@ Isora is a topology console for local compute: machines, images, storage and hos
 - Hover and focus respond within 120–180 ms. No perpetual ambient motion except a determinate/indeterminate operation indicator.
 - Reduced motion removes spatial transitions and keeps immediate state changes.
 
-## Windows 11 details
+## Platform details
 
-- Auto accent comes from the active `QPalette::Highlight` color.
-- System theme follows `QStyleHints::colorScheme`.
+- Qt Quick/QML is the only user-interface layer; C++ exposes application and virtualization services to QML.
+- The Qt Quick Controls Material style supplies native control behavior beneath Isora's Material 3 components.
 - Guest display is a separately branded Isora window; windowed, borderless and fullscreen modes are explicit per-machine settings.
 - GPU controls distinguish host-process preference on Windows from DRM render-node and PRIME offload on Linux.
 - Window geometry and maximized state persist across normal restarts.

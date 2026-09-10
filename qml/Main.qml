@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.Material
 import QtQuick.Layouts
 import Isora
 import "components"
@@ -14,6 +15,11 @@ ApplicationWindow {
     visible: true
     title: "Isora"
     color: Theme.window
+    Material.theme: Material.Dark
+    Material.accent: Theme.accent
+    Material.primary: Theme.accent
+    Material.background: Theme.window
+    Material.foreground: Theme.text
 
     property int currentPage: 0
     property string testDialog: ""
@@ -184,15 +190,6 @@ ApplicationWindow {
                 }
                 Label { text: "Isora"; color: Theme.text; font.pixelSize: 14; font.weight: Font.DemiBold }
                 Item { Layout.fillWidth: true }
-                IconButton {
-                    Layout.preferredWidth: 34
-                    Layout.preferredHeight: 34
-                    padding: 8
-                    text: Theme.dark ? "Светлая тема" : "Тёмная тема"
-                    iconSource: Theme.dark ? "qrc:/qt/qml/Isora/qml/assets/icons/sun.svg"
-                                           : "qrc:/qt/qml/Isora/qml/assets/icons/moon.svg"
-                    onClicked: Appearance.themeMode = Theme.dark ? "light" : "dark"
-                }
             }
         }
 
@@ -325,7 +322,7 @@ ApplicationWindow {
                                     Label {
                                         Layout.fillWidth: true
                                         text: modelData.name
-                                        color: window.selectedMachineId === modelData.id ? Theme.accentText : Theme.text
+                                        color: Theme.text
                                         elide: Text.ElideRight
                                         font.pixelSize: 12
                                         font.weight: Font.DemiBold
@@ -333,7 +330,7 @@ ApplicationWindow {
                                     Label {
                                         Layout.fillWidth: true
                                         text: modelData.resources
-                                        color: window.selectedMachineId === modelData.id ? Theme.accentText : Theme.textMuted
+                                        color: window.selectedMachineId === modelData.id ? Theme.textSecondary : Theme.textMuted
                                         opacity: 0.74
                                         elide: Text.ElideRight
                                         font.pixelSize: 9
@@ -351,7 +348,8 @@ ApplicationWindow {
                             background: Rectangle {
                                 radius: 12
                                 color: window.selectedMachineId === modelData.id ? Theme.accentSubtle : (parent.hovered ? Theme.surfaceHover : "transparent")
-                                border.color: "transparent"
+                                border.width: window.selectedMachineId === modelData.id ? 1 : 0
+                                border.color: window.selectedMachineId === modelData.id ? Theme.accentBorder : "transparent"
                             }
                         }
                     }
