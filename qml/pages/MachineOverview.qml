@@ -108,7 +108,7 @@ Item {
             }
 
             SectionDivider { }
-            SectionTitle { title: "Управление"; description: "Настройка, восстановление и работа с диском" }
+            SectionTitle { title: "Управление" }
             Item {
                 Layout.fillWidth: true
                 implicitHeight: actionColumn.implicitHeight
@@ -116,15 +116,15 @@ Item {
                     id: actionColumn
                     anchors.fill: parent
                     spacing: 0
-                    ActionRow { title: "Параметры"; description: "Память, процессоры, диск, экран и GPU"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"; onClicked: root.openSettings() }
-                    ActionRow { title: "Снимки состояния"; description: root.machine ? root.machine.snapshots + " " + root.snapshotWord(root.machine.snapshots) : "Точки восстановления"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"; onClicked: root.openSnapshots() }
-                    ActionRow { title: "Резервные копии"; description: root.machine && root.machine.running ? "Остановите машину, чтобы работать с копиями" : "Независимые проверяемые копии системного диска"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/backup.svg"; enabled: root.machine && !root.machine.running; onClicked: root.openBackups() }
-                    ActionRow { title: root.machine && root.machine.running ? "Открыть экран" : "Запустить с диска"; description: root.machine && root.machine.running ? "Подключиться к гостевой системе через virt-viewer" : "Запустить машину без установочного ISO"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; onClicked: root.machine.running ? App.openDisplay(root.machine.id) : App.startMachineFromDisk(root.machine.id) }
+                    ActionRow { title: "Параметры"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"; onClicked: root.openSettings() }
+                    ActionRow { title: "Снимки"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"; onClicked: root.openSnapshots() }
+                    ActionRow { title: "Резервные копии"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/backup.svg"; enabled: root.machine && !root.machine.running; onClicked: root.openBackups() }
+                    ActionRow { title: root.machine && root.machine.running ? "Открыть экран" : "Запустить с диска"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; onClicked: root.machine.running ? App.openDisplay(root.machine.id) : App.startMachineFromDisk(root.machine.id) }
                 }
             }
 
             SectionDivider { }
-            SectionTitle { title: "Конфигурация"; description: "Текущие параметры и расположение данных" }
+            SectionTitle { title: "Конфигурация" }
             Item {
                 Layout.fillWidth: true
                 implicitHeight: infoColumn.implicitHeight
@@ -140,7 +140,7 @@ Item {
             }
 
             SectionDivider { }
-            SectionTitle { title: "Опасная зона"; description: "Действия с риском потери данных" }
+            SectionTitle { title: "Опасная зона" }
             Item {
                 Layout.fillWidth: true
                 implicitHeight: 52
@@ -167,10 +167,7 @@ Item {
 
     component SectionTitle: ColumnLayout {
         property string title: ""
-        property string description: ""
-        spacing: 3
         Label { text: parent.title; color: Theme.text; font.pixelSize: 17; font.weight: Font.DemiBold }
-        Label { text: parent.description; color: Theme.textMuted; font.pixelSize: 11 }
     }
 
     component Metric: ColumnLayout {
@@ -203,21 +200,15 @@ Item {
     component ActionRow: Button {
         id: actionRow
         property string title: ""
-        property string description: ""
         property url iconSource
         Layout.fillWidth: true
-        implicitHeight: 72
+        implicitHeight: 58
         leftPadding: 12
         rightPadding: 12
         contentItem: RowLayout {
             spacing: 14
-            Rectangle { Layout.preferredWidth: 42; Layout.preferredHeight: 42; radius: 14; color: Theme.accentSubtle; Image { anchors.centerIn: parent; width: 21; height: 21; source: actionRow.iconSource } }
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: 3
-                Label { Layout.fillWidth: true; text: actionRow.title; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold; elide: Text.ElideRight }
-                Label { Layout.fillWidth: true; text: actionRow.description; color: Theme.textMuted; font.pixelSize: 10; elide: Text.ElideRight }
-            }
+            Rectangle { Layout.preferredWidth: 36; Layout.preferredHeight: 36; radius: 11; color: Theme.accentSubtle; Image { anchors.centerIn: parent; width: 19; height: 19; source: actionRow.iconSource } }
+            Label { Layout.fillWidth: true; text: actionRow.title; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold; elide: Text.ElideRight }
             Label { text: "›"; color: Theme.textSecondary; font.pixelSize: 21 }
         }
         background: Rectangle {
@@ -279,5 +270,4 @@ Item {
     function displayModeText(value) { if (value === "fullscreen") return "Полный экран"; if (value === "borderless") return "Без рамок"; return "В окне" }
     function machineInitial() { return machine && machine.name.length > 0 ? machine.name.charAt(0).toUpperCase() : "VM" }
     function machineColor(id) { const colors = ["#357A50", "#586F4F", "#6D5E3F", "#53636F"]; let hash = 0; for (let index = 0; index < id.length; ++index) hash = (hash + id.charCodeAt(index)) % colors.length; return colors[hash] }
-    function snapshotWord(count) { const lastTwo = count % 100; const last = count % 10; if (lastTwo >= 11 && lastTwo <= 14) return "снимков"; if (last === 1) return "снимок"; if (last >= 2 && last <= 4) return "снимка"; return "снимков" }
 }

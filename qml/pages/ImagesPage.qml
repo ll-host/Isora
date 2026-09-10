@@ -34,7 +34,6 @@ Item {
             visible: !root.compact
             Layout.fillWidth: true
             title: "ISO-образы"
-            description: "Установочные образы в локальном хранилище Isora"
         }
 
         Surface {

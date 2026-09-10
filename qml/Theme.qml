@@ -14,7 +14,7 @@ QtObject {
     readonly property color textMuted: "#89938B"
     readonly property color accent: Appearance.accent
     readonly property color accentHover: Qt.lighter(accent, 1.08)
-    readonly property color accentText: accentLuminance(accent) > 0.58 ? "#00391F" : "#FFFFFF"
+    readonly property color accentText: accentLuminance(accent) > 0.179 ? "#07110A" : "#FFFFFF"
     readonly property color accentSubtle: Qt.rgba(accent.r, accent.g, accent.b, 0.22)
     readonly property color accentBorder: Qt.rgba(accent.r, accent.g, accent.b, 0.72)
     readonly property color success: "#9FE0B4"

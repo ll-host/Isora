@@ -133,72 +133,84 @@ ApplicationWindow {
                             border.color: Theme.accentBorder
                             Image { anchors.centerIn: parent; width: 25; height: 25; source: "qrc:/qt/qml/Isora/qml/assets/icons/app.svg" }
                         }
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 1
-                            Label { text: "Isora"; color: Theme.text; font.pixelSize: 16; font.weight: Font.DemiBold }
-                            Label { text: "Локальная виртуализация"; color: Theme.textMuted; font.pixelSize: 9 }
-                        }
+                        Label { Layout.fillWidth: true; text: "Isora"; color: Theme.text; font.pixelSize: 16; font.weight: Font.DemiBold }
                     }
 
-                    ActionButton {
+                    Button {
+                        id: createMachineButton
                         Layout.fillWidth: true
-                        Layout.preferredHeight: window.compactNavigation ? 42 : 44
-                        text: "Новая машина"
-                        iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/plus.svg"
-                        accent: true
+                        Layout.preferredHeight: window.compactNavigation ? 44 : 48
+                        text: "Создать машину"
                         enabled: App.connected && !App.busy
                         onClicked: {
                             window.currentPage = 0
                             machinesPage.openCreateDialog()
                         }
+                        contentItem: RowLayout {
+                            spacing: 10
+                            Item { Layout.fillWidth: true }
+                            Label { text: "+"; color: Theme.accentText; font.pixelSize: 20; font.weight: Font.Medium }
+                            Label { text: createMachineButton.text; color: Theme.accentText; font.pixelSize: 12; font.weight: Font.DemiBold }
+                            Item { Layout.fillWidth: true }
+                        }
+                        background: Rectangle {
+                            radius: 15
+                            color: createMachineButton.down ? Qt.darker(Theme.accent, 1.08) : (createMachineButton.hovered ? Theme.accentHover : Theme.accent)
+                            opacity: createMachineButton.enabled ? 1 : 0.42
+                        }
                     }
 
-                    TextField {
-                        id: searchField
+                    Rectangle {
                         Layout.fillWidth: true
                         Layout.topMargin: window.compactNavigation ? 12 : 18
                         implicitHeight: window.compactNavigation ? 42 : 44
-                        leftPadding: 42
-                        rightPadding: text.length > 0 ? 40 : 14
-                        placeholderText: "Найти машину"
-                        color: Theme.text
-                        placeholderTextColor: Theme.textMuted
-                        selectionColor: Theme.accent
-                        selectedTextColor: Theme.accentText
-                        font.pixelSize: 12
-                        background: Rectangle {
-                            color: searchField.activeFocus ? Theme.surfaceRaised : Theme.surface
-                            radius: 14
-                            border.width: searchField.activeFocus ? 2 : 0
-                            border.color: Theme.accent
-                            Image {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 14
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: 17
-                                height: 17
-                                source: "qrc:/qt/qml/Isora/qml/assets/icons/search.svg"
-                                opacity: 0.8
+                        color: searchField.activeFocus ? Theme.surfaceRaised : Theme.surface
+                        radius: 14
+                        border.width: searchField.activeFocus ? 2 : 0
+                        border.color: Theme.accent
+
+                        Image {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 14
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 18
+                            height: 18
+                            source: "qrc:/qt/qml/Isora/qml/assets/icons/search.svg"
+                        }
+                        TextInput {
+                            id: searchField
+                            anchors.left: parent.left
+                            anchors.leftMargin: 43
+                            anchors.right: clearSearchButton.visible ? clearSearchButton.left : parent.right
+                            anchors.rightMargin: clearSearchButton.visible ? 4 : 14
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: Theme.text
+                            selectionColor: Theme.accent
+                            selectedTextColor: Theme.accentText
+                            font.pixelSize: 12
+                            clip: true
+                            verticalAlignment: TextInput.AlignVCenter
+                            Label {
+                                anchors.fill: parent
+                                visible: searchField.text.length === 0 && !searchField.activeFocus
+                                text: "Поиск машин"
+                                color: Theme.textMuted
+                                font: searchField.font
+                                verticalAlignment: Text.AlignVCenter
                             }
-                            Button {
-                                visible: searchField.text.length > 0
-                                anchors.right: parent.right
-                                anchors.rightMargin: 6
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: 30
-                                height: 30
-                                text: "×"
-                                onClicked: searchField.clear()
-                                contentItem: Label {
-                                    text: parent.text
-                                    color: Theme.textSecondary
-                                    font.pixelSize: 18
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                                background: Rectangle { radius: 15; color: parent.hovered ? Theme.surfaceHover : "transparent" }
-                            }
+                        }
+                        Button {
+                            id: clearSearchButton
+                            visible: searchField.text.length > 0
+                            anchors.right: parent.right
+                            anchors.rightMargin: 6
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 30
+                            height: 30
+                            text: "×"
+                            onClicked: searchField.clear()
+                            contentItem: Label { text: clearSearchButton.text; color: Theme.textSecondary; font.pixelSize: 18; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                            background: Rectangle { radius: 15; color: clearSearchButton.hovered ? Theme.surfaceHover : "transparent" }
                         }
                     }
 
@@ -246,8 +258,10 @@ ApplicationWindow {
                                 window.currentPage = 0
                                 machinesPage.showOverview()
                             }
-                            contentItem: RowLayout {
-                                spacing: 11
+                            contentItem: Item {
+                                RowLayout {
+                                    anchors.fill: parent
+                                    spacing: 11
                                 Rectangle {
                                     Layout.preferredWidth: 38
                                     Layout.preferredHeight: 38
@@ -261,9 +275,10 @@ ApplicationWindow {
                                         font.weight: Font.Bold
                                     }
                                 }
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 3
+                                    ColumnLayout {
+                                        Layout.fillWidth: true
+                                        Layout.alignment: Qt.AlignVCenter
+                                        spacing: 2
                                     Label {
                                         Layout.fillWidth: true
                                         text: modelData.name
@@ -274,18 +289,18 @@ ApplicationWindow {
                                     }
                                     Label {
                                         Layout.fillWidth: true
-                                        text: modelData.resources
-                                        color: window.currentPage === 0 && window.selectedMachineId === modelData.id ? Theme.textSecondary : Theme.textMuted
-                                        opacity: 0.74
+                                        text: modelData.running ? "Работает" : "Выключена"
+                                        color: modelData.running ? Theme.success : Theme.textMuted
                                         elide: Text.ElideRight
                                         font.pixelSize: 9
                                     }
                                 }
-                                Rectangle {
-                                    Layout.preferredWidth: 7
-                                    Layout.preferredHeight: 7
-                                    radius: 4
-                                    color: modelData.running ? Theme.success : Theme.textMuted
+                                    Rectangle {
+                                        Layout.preferredWidth: 7
+                                        Layout.preferredHeight: 7
+                                        radius: 4
+                                        color: modelData.running ? Theme.success : Theme.textMuted
+                                    }
                                 }
                             }
                             background: Rectangle {
@@ -367,19 +382,9 @@ ApplicationWindow {
                         onClicked: window.currentPage = 2
                         contentItem: RowLayout {
                             spacing: 10
-                            Rectangle {
-                                Layout.preferredWidth: 8
-                                Layout.preferredHeight: 8
-                                radius: 4
-                                color: App.systemReady ? Theme.success : Theme.warning
-                            }
-                            ColumnLayout {
-                                Layout.fillWidth: true
-                                spacing: 2
-                                Label { text: "Локальный хост"; color: Theme.text; font.pixelSize: 10; font.weight: Font.DemiBold }
-                                Label { text: App.systemReady ? "KVM доступен" : "Нужна проверка"; color: Theme.textMuted; font.pixelSize: 9 }
-                            }
-                            Label { text: "›"; color: Theme.textMuted; font.pixelSize: 18 }
+                            Image { Layout.preferredWidth: 18; Layout.preferredHeight: 18; source: "qrc:/qt/qml/Isora/qml/assets/icons/shield.svg" }
+                            Label { Layout.fillWidth: true; text: "Система"; color: Theme.text; font.pixelSize: 11; font.weight: Font.Medium }
+                            Rectangle { Layout.preferredWidth: 8; Layout.preferredHeight: 8; radius: 4; color: App.systemReady ? Theme.success : Theme.warning }
                         }
                         background: Rectangle {
                             color: window.currentPage === 2 ? Theme.surfaceRaised : (parent.hovered ? Theme.surfaceHover : "transparent")

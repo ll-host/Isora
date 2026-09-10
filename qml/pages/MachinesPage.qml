@@ -83,8 +83,8 @@ Item {
                     x: (parent.width - width) / 2
                     y: 32
                     spacing: 20
-                    BackHeader { title: "Новая виртуальная машина"; description: "Создание из ISO-образа"; onBack: root.showOverview() }
-                    SectionHeading { title: "Основное"; description: "Название и установочный образ" }
+                    BackHeader { title: "Новая виртуальная машина"; onBack: root.showOverview() }
+                    SectionHeading { title: "Основное" }
                     Surface {
                         Layout.fillWidth: true
                         implicitHeight: createBasics.implicitHeight + 40
@@ -100,7 +100,7 @@ Item {
                             ActionButton { visible: App.images.length === 0; text: "Перейти в раздел ISO-образов"; onClicked: root.openImages() }
                         }
                     }
-                    SectionHeading { title: "Ресурсы"; description: "Начальные параметры можно изменить позже" }
+                    SectionHeading { title: "Ресурсы" }
                     Surface {
                         Layout.fillWidth: true
                         implicitHeight: createResources.implicitHeight + 40
@@ -159,7 +159,7 @@ Item {
                     x: (parent.width - width) / 2
                     y: 32
                     spacing: 20
-                    BackHeader { title: root.selectedMachine ? "Параметры · " + root.selectedMachine.name : "Параметры"; description: "Ресурсы, экран и графика"; onBack: root.showOverview() }
+                    BackHeader { title: root.selectedMachine ? "Параметры · " + root.selectedMachine.name : "Параметры"; onBack: root.showOverview() }
                     InlineConfirmation {
                         Layout.fillWidth: true
                         visible: root.pendingAction === "restart-config"
@@ -170,7 +170,7 @@ Item {
                         onCancelled: root.pendingAction = ""
                         onAccepted: root.saveMachineSettings(true)
                     }
-                    SectionHeading { title: "Ресурсы"; description: "Диск можно только увеличить" }
+                    SectionHeading { title: "Ресурсы" }
                     Surface {
                         Layout.fillWidth: true
                         implicitHeight: settingsResources.implicitHeight + 40
@@ -193,7 +193,7 @@ Item {
                             }
                         }
                     }
-                    SectionHeading { title: "Экран и GPU"; description: "Режим окна гостя и графический адаптер" }
+                    SectionHeading { title: "Экран и GPU" }
                     Surface {
                         Layout.fillWidth: true
                         implicitHeight: graphicsContent.implicitHeight + 40
@@ -231,7 +231,7 @@ Item {
                 x: (parent.width - width) / 2
                 y: 32
                 spacing: 18
-                BackHeader { title: root.selectedMachine ? "Снимки · " + root.selectedMachine.name : "Снимки"; description: "Точки восстановления состояния машины"; onBack: root.showOverview() }
+                BackHeader { title: root.selectedMachine ? "Снимки · " + root.selectedMachine.name : "Снимки"; onBack: root.showOverview() }
                 InlineConfirmation {
                     Layout.fillWidth: true
                     visible: root.pendingAction === "restore-snapshot" || root.pendingAction === "delete-snapshot"
@@ -284,7 +284,7 @@ Item {
                 x: (parent.width - width) / 2
                 y: 32
                 spacing: 18
-                BackHeader { title: root.selectedMachine ? "Резервные копии · " + root.selectedMachine.name : "Резервные копии"; description: App.backupDirectory; onBack: root.showOverview() }
+                BackHeader { title: root.selectedMachine ? "Резервные копии · " + root.selectedMachine.name : "Резервные копии"; onBack: root.showOverview() }
                 InlineConfirmation {
                     Layout.fillWidth: true
                     visible: root.pendingAction === "restore-backup" || root.pendingAction === "delete-backup"
@@ -344,7 +344,7 @@ Item {
                     x: (parent.width - width) / 2
                     y: 32
                     spacing: 20
-                    BackHeader { title: "Подключить существующую машину"; description: "Регистрация QCOW2 без перемещения исходного файла"; onBack: root.showOverview() }
+                    BackHeader { title: "Подключить существующую машину"; onBack: root.showOverview() }
                     Surface {
                         Layout.fillWidth: true
                         implicitHeight: importFields.implicitHeight + 40
@@ -388,10 +388,7 @@ Item {
 
     component SectionHeading: ColumnLayout {
         property string title: ""
-        property string description: ""
-        spacing: 3
         Label { text: parent.title; color: Theme.text; font.pixelSize: 18; font.weight: Font.DemiBold }
-        Label { text: parent.description; color: Theme.textMuted; font.pixelSize: 11 }
     }
 
     component FieldLabel: Label { color: Theme.textSecondary; font.pixelSize: 12; font.weight: Font.Medium }
@@ -408,17 +405,11 @@ Item {
     component BackHeader: RowLayout {
         id: backHeader
         property string title: ""
-        property string description: ""
         signal back()
         Layout.fillWidth: true
         spacing: 14
         ActionButton { text: "← Назад"; onClicked: backHeader.back() }
-        ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 3
-            Label { Layout.fillWidth: true; text: backHeader.title; color: Theme.text; font.pixelSize: 26; font.weight: Font.DemiBold; elide: Text.ElideRight }
-            Label { Layout.fillWidth: true; text: backHeader.description; color: Theme.textMuted; font.pixelSize: 11; elide: Text.ElideMiddle }
-        }
+        Label { Layout.fillWidth: true; text: backHeader.title; color: Theme.text; font.pixelSize: 26; font.weight: Font.DemiBold; elide: Text.ElideRight }
     }
 
     component InlineConfirmation: Surface {

@@ -22,7 +22,6 @@ Item {
             PageHeader {
                 visible: !root.compact
                 title: "Состояние системы"
-                description: "Компоненты, необходимые для запуска виртуальных машин"
                 ActionButton {
                     text: "Обновить"
                     iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/refresh.svg"
@@ -33,12 +32,7 @@ Item {
             RowLayout {
                 visible: root.compact
                 Layout.fillWidth: true
-                Label {
-                    Layout.fillWidth: true
-                    text: "Компоненты, необходимые для запуска виртуальных машин"
-                    color: Theme.textSecondary
-                    font.pixelSize: 11
-                }
+                Item { Layout.fillWidth: true }
                 ActionButton {
                     text: "Обновить"
                     iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/refresh.svg"
