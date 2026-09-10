@@ -100,6 +100,7 @@ qt_add_qml_module(isora
         qml/assets/icons/play.svg
         qml/assets/icons/plus.svg
         qml/assets/icons/refresh.svg
+        qml/assets/icons/search.svg
         qml/assets/icons/settings.svg
         qml/assets/icons/shield.svg
         qml/assets/icons/snapshot.svg
