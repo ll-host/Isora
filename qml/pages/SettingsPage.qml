@@ -48,37 +48,14 @@ Item {
 
         ColumnLayout {
             id: content
-            width: parent.width - (root.compact ? 8 : Theme.pageMargin * 2)
-            x: root.compact ? 4 : Theme.pageMargin
-            y: root.compact ? 44 : 28
-            spacing: 16
+            width: Math.min(1020, parent.width - 56)
+            x: Math.max(28, (parent.width - width) / 2)
+            y: 28
+            spacing: 20
 
             PageHeader {
                 visible: !root.compact
                 title: "Настройки"
-            }
-
-            Surface {
-                Layout.fillWidth: true
-                implicitHeight: appearanceContent.implicitHeight + 36
-                ColumnLayout {
-                    id: appearanceContent
-                    anchors.fill: parent
-                    anchors.margins: 18
-                    spacing: 12
-                    Label { text: "Акцент"; color: Theme.text; font.pixelSize: 16; font.weight: Font.DemiBold }
-                    GridLayout {
-                        Layout.fillWidth: true
-                        columns: width >= 760 ? 5 : (width >= 480 ? 3 : 2)
-                        columnSpacing: 10
-                        rowSpacing: 10
-                        AccentChoice { Layout.fillWidth: true; mode: "mint"; title: "Мятный"; swatchColor: "#9FE0B4" }
-                        AccentChoice { Layout.fillWidth: true; mode: "teal"; title: "Бирюзовый"; swatchColor: "#168F91" }
-                        AccentChoice { Layout.fillWidth: true; mode: "violet"; title: "Фиолетовый"; swatchColor: "#7767E8" }
-                        AccentChoice { Layout.fillWidth: true; mode: "blue"; title: "Синий"; swatchColor: "#4D86E8" }
-                        AccentChoice { Layout.fillWidth: true; mode: "amber"; title: "Янтарный"; swatchColor: "#C77B22" }
-                    }
-                }
             }
 
             Surface {
@@ -113,8 +90,7 @@ Item {
                     anchors.fill: parent
                     anchors.margins: 18
                     spacing: 14
-                    Label { text: "Новая виртуальная машина"; color: Theme.text; font.pixelSize: 16; font.weight: Font.DemiBold }
-                    Label { text: "Эти значения подставляются в мастер создания"; color: Theme.textSecondary; font.pixelSize: 12 }
+                    Label { text: "Новая машина"; color: Theme.text; font.pixelSize: 19; font.weight: Font.DemiBold }
                     GridLayout {
                         Layout.fillWidth: true
                         columns: width >= 620 ? 3 : 1
@@ -142,7 +118,7 @@ Item {
                         AppSwitch { id: accelerationSwitch; visible: !App.windowsHost; text: "3D-ускорение гостя"; checked: App.defaultUse3d; enabled: App.intelRenderAvailable; onToggled: root.dirty = true }
                         Label { visible: !App.windowsHost && !App.intelRenderAvailable; text: "DRM render-node не найден"; color: Theme.textMuted; font.pixelSize: 11 }
                     }
-                    Label { text: "Экран новых машин"; color: Theme.textSecondary; font.pixelSize: 12 }
+                    Label { text: "Режим экрана"; color: Theme.textSecondary; font.pixelSize: 12 }
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 8
@@ -170,8 +146,7 @@ Item {
                     anchors.fill: parent
                     anchors.margins: 18
                     spacing: 10
-                    Label { text: "Резервные копии"; color: Theme.text; font.pixelSize: 16; font.weight: Font.DemiBold }
-                    Label { text: "Независимые копии дисков выключенных машин"; color: Theme.textSecondary; font.pixelSize: 12 }
+                    Label { text: "Каталоги"; color: Theme.text; font.pixelSize: 19; font.weight: Font.DemiBold }
                     RowLayout {
                         Layout.fillWidth: true
                         AppTextField {
@@ -195,7 +170,6 @@ Item {
                         Layout.fillWidth: true
                         spacing: 4
                         Label { text: "Открывать экран после запуска"; color: Theme.text; font.pixelSize: 14; font.weight: Font.DemiBold }
-                        Label { text: "После запуска машины сразу открывать virt-viewer"; color: Theme.textSecondary; font.pixelSize: 12 }
                     }
                     AppSwitch { id: autoOpenSwitch; checked: App.openDisplayAfterStart; onToggled: root.dirty = true }
                 }
@@ -246,48 +220,6 @@ Item {
                     }
                 }
             }
-        }
-    }
-
-    component AccentChoice: Button {
-        id: accentChoice
-        property string mode: "mint"
-        property string title: ""
-        property color swatchColor: "#9FE0B4"
-        implicitHeight: 54
-        onClicked: Appearance.accentMode = mode
-        leftPadding: 12
-        rightPadding: 12
-        contentItem: RowLayout {
-            spacing: 10
-            Rectangle {
-                Layout.preferredWidth: 26
-                Layout.preferredHeight: 26
-                radius: 13
-                color: accentChoice.swatchColor
-                Label {
-                    anchors.centerIn: parent
-                    visible: Appearance.accentMode === accentChoice.mode
-                    text: "✓"
-                    color: Theme.contrastText(accentChoice.swatchColor)
-                    font.pixelSize: 12
-                    font.weight: Font.Bold
-                }
-            }
-            Label {
-                Layout.fillWidth: true
-                text: accentChoice.title
-                color: Theme.text
-                font.pixelSize: 11
-                font.weight: Appearance.accentMode === accentChoice.mode ? Font.DemiBold : Font.Normal
-                elide: Text.ElideRight
-            }
-        }
-        background: Rectangle {
-            radius: 14
-            color: accentChoice.hovered ? Theme.surfaceHover : Theme.surfaceRaised
-            border.width: Appearance.accentMode === accentChoice.mode ? 2 : 1
-            border.color: Appearance.accentMode === accentChoice.mode ? accentChoice.swatchColor : Theme.border
         }
     }
 

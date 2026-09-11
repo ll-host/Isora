@@ -84,11 +84,13 @@ int main(int argc, char* argv[])
             }
         });
     }
-    const QStringList pages{QStringLiteral("machines"), QStringLiteral("images"), QStringLiteral("diagnostics"),
-                            QStringLiteral("settings")};
-    const qsizetype page = pages.indexOf(parser.value(QStringLiteral("page")));
-    if (page >= 0)
-        root->setProperty("currentPage", page);
+    const QString requestedPage = parser.value(QStringLiteral("page"));
+    if (requestedPage == QStringLiteral("machines"))
+        root->setProperty("currentPage", 0);
+    else if (requestedPage == QStringLiteral("images") || requestedPage == QStringLiteral("storage"))
+        root->setProperty("currentPage", 1);
+    else if (requestedPage == QStringLiteral("settings"))
+        root->setProperty("currentPage", 2);
     if (parser.isSet(QStringLiteral("dialog")))
         root->setProperty("testDialog", parser.value(QStringLiteral("dialog")));
     if (parser.isSet(QStringLiteral("screenshot"))) {

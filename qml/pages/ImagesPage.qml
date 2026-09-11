@@ -8,6 +8,7 @@ import "../components"
 Item {
     id: root
     property bool compact: false
+    property bool embedded: false
     property var selectedImage: null
     property string testDialogName: ""
     property bool confirmingRemoval: false
@@ -56,8 +57,10 @@ Item {
         }
 
         Button {
+            id: addImageButton
             Layout.fillWidth: true
-            Layout.preferredHeight: 136
+            Layout.preferredHeight: root.embedded ? 0 : 136
+            visible: !root.embedded
             enabled: !App.busy
             onClicked: isoDialog.open()
             contentItem: ColumnLayout {
@@ -165,6 +168,10 @@ Item {
     function formatDate(value) {
         const date = new Date(value)
         return isNaN(date.getTime()) ? "—" : date.toLocaleDateString(Qt.locale("ru_RU"), Locale.ShortFormat)
+    }
+
+    function openPicker() {
+        isoDialog.open()
     }
 
     function openTestDialogIfReady() {

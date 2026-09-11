@@ -84,6 +84,7 @@ qt_add_qml_module(isora
         qml/pages/MachineOverview.qml
         qml/pages/MachinesPage.qml
         qml/pages/SettingsPage.qml
+        qml/pages/StoragePage.qml
     RESOURCES
         qml/assets/icons/activity.svg
         qml/assets/icons/app.svg
