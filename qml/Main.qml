@@ -425,14 +425,14 @@ ApplicationWindow {
                 anchors.fill: parent
                 spacing: 12
                 Image { Layout.preferredWidth: 21; Layout.preferredHeight: 21; source: control.iconSource }
-                Label { Layout.fillWidth: true; text: control.text; color: control.selected ? Theme.onSecondaryContainer : Theme.textSecondary; font.pixelSize: 13; font.weight: control.selected ? Font.DemiBold : Font.Normal }
+                Label { Layout.fillWidth: true; text: control.text; color: control.selected ? Theme.secondaryContainerText : Theme.textSecondary; font.pixelSize: 13; font.weight: control.selected ? Font.DemiBold : Font.Normal }
             }
             ColumnLayout {
                 visible: window.compactRail
                 anchors.centerIn: parent
                 spacing: 3
                 Image { Layout.alignment: Qt.AlignHCenter; Layout.preferredWidth: 21; Layout.preferredHeight: 21; source: control.iconSource }
-                Label { Layout.alignment: Qt.AlignHCenter; text: control.text; color: control.selected ? Theme.onSecondaryContainer : Theme.textSecondary; font.pixelSize: 9 }
+                Label { Layout.alignment: Qt.AlignHCenter; text: control.text; color: control.selected ? Theme.secondaryContainerText : Theme.textSecondary; font.pixelSize: 9 }
             }
         }
         background: Rectangle { radius: window.compactRail ? 18 : 16; color: control.selected ? Theme.accentSubtle : (control.hovered ? Theme.surfaceHover : "transparent"); border.width: control.activeFocus ? 2 : 0; border.color: Theme.accent }

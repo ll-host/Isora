@@ -19,7 +19,7 @@ QtObject {
     readonly property color accentBorder: "#96D5A9"
     readonly property color secondary: "#B7CBBD"
     readonly property color secondaryContainer: "#3A4B3F"
-    readonly property color onSecondaryContainer: "#D3E8D8"
+    readonly property color secondaryContainerText: "#D3E8D8"
     readonly property color success: "#96D5A9"
     readonly property color successSurface: "#12512E"
     readonly property color successBorder: "#96D5A9"
