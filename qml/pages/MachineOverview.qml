@@ -13,32 +13,38 @@ Item {
 
     ColumnLayout {
         visible: root.machine !== null
-        width: Math.min(720, parent.width - 48)
-        x: Math.max(24, (parent.width - width) / 2)
-        y: 28
-        spacing: 20
+        width: Math.min(714, parent.width - 48)
+        x: 24
+        y: 46
+        spacing: 0
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 56
+            Layout.preferredHeight: 64
             spacing: 16
             Label {
                 Layout.fillWidth: true
                 text: root.machine ? root.machine.name : ""
                 color: Theme.text
-                font.pixelSize: 32
+                font.pixelSize: 36
                 font.weight: Font.Bold
                 elide: Text.ElideRight
             }
             RowLayout {
                 spacing: 3
                 ActionButton {
+                    Layout.preferredWidth: 166
+                    Layout.preferredHeight: 64
                     text: "Консоль"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"
                     enabled: root.machine && root.machine.running && !App.busy
                     onClicked: App.openConsole(root.machine.id)
                 }
                 ActionButton {
+                    Layout.preferredWidth: 136
+                    Layout.preferredHeight: 64
                     text: root.machine && root.machine.running ? "Выключить" : "Запустить"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/play.svg"
                     accent: true
                     enabled: root.machine && !App.busy
                     onClicked: root.machine.running ? App.shutdownMachine(root.machine.id) : App.startMachine(root.machine.id)
@@ -47,32 +53,43 @@ Item {
         }
 
         StatusBadge {
-            Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: 4
+            Layout.alignment: Qt.AlignLeft
             text: root.machine && root.machine.running ? "●  Работает" : "⏻  Выключена"
             good: root.machine && root.machine.running
         }
 
-        RowLayout {
+        Rectangle {
+            Layout.topMargin: 52
             Layout.fillWidth: true
-            Layout.preferredHeight: 72
-            spacing: 3
+            Layout.preferredHeight: 1
+            color: Theme.border
+        }
+
+        RowLayout {
+            Layout.topMargin: 28
+            Layout.preferredWidth: Math.min(674, parent.width)
+            Layout.alignment: Qt.AlignLeft
+            Layout.preferredHeight: 120
+            spacing: 4
             MetricButton { value: root.machine ? root.memoryText(root.machine.memoryMiB) : "—"; label: "Память"; first: true }
             MetricButton { value: root.machine ? String(root.machine.cpuCount) : "—"; label: "CPU" }
-            MetricButton { value: root.machine ? root.machine.diskGiB + " ГиБ" : "—"; label: "Диск" }
+            MetricButton { value: root.machine ? root.machine.diskGiB + " ГБ" : "—"; label: "Диск" }
             MetricButton { value: root.machine ? String(root.machine.snapshots) : "—"; label: "Снимки"; last: true }
         }
 
         Label {
-            Layout.topMargin: 12
+            Layout.topMargin: 51
             text: "Управление"
             color: Theme.text
-            font.pixelSize: 22
+            font.pixelSize: 26
             font.weight: Font.Bold
         }
 
         ColumnLayout {
+            Layout.topMargin: 7
             Layout.fillWidth: true
-            spacing: 3
+            spacing: 4
             ActionRow { title: "Оборудование"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"; first: true; onClicked: root.openSettings() }
             ActionRow { title: "Снимки"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"; onClicked: root.openSnapshots() }
             ActionRow {
@@ -120,19 +137,19 @@ Item {
         property bool first: false
         property bool last: false
         Layout.fillWidth: true
-        implicitHeight: 72
-        leftPadding: 16
-        rightPadding: 18
+        implicitHeight: 82
+        leftPadding: 18
+        rightPadding: 22
         contentItem: RowLayout {
             spacing: 14
             Rectangle {
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                radius: 20
+                Layout.preferredWidth: 46
+                Layout.preferredHeight: 46
+                radius: 23
                 color: Theme.accentSubtle
-                Image { anchors.centerIn: parent; width: 22; height: 22; source: actionRow.iconSource }
+                Image { anchors.centerIn: parent; width: 24; height: 24; source: actionRow.iconSource }
             }
-            Label { Layout.fillWidth: true; text: actionRow.title; color: Theme.text; font.pixelSize: 14; font.weight: Font.Medium }
+            Label { Layout.fillWidth: true; text: actionRow.title; color: Theme.text; font.pixelSize: 16; font.weight: Font.Normal }
             Label { text: "›"; color: Theme.textSecondary; font.pixelSize: 24 }
         }
         background: Rectangle {
@@ -150,6 +167,6 @@ Item {
     function memoryText(value) {
         if (value <= 0)
             return "—"
-        return value % 1024 === 0 ? value / 1024 + " ГиБ" : value + " МиБ"
+        return value % 1024 === 0 ? value / 1024 + " ГБ" : value + " МБ"
     }
 }

@@ -26,9 +26,9 @@ ApplicationWindow {
     property string selectedMachineId: ""
     property bool railExpanded: width >= 1160
     readonly property bool compactRail: !railExpanded
-    readonly property int railWidth: railExpanded ? 220 : 96
+    readonly property int railWidth: railExpanded ? 238 : 96
     readonly property bool machinePanelVisible: currentPage === 0 && machinesPage.route === "overview"
-    readonly property int machinePanelWidth: width < 1240 ? 300 : 376
+    readonly property int machinePanelWidth: width < 1240 ? 340 : 438
     readonly property var selectedMachine: machineById(selectedMachineId)
     readonly property var filteredMachines: {
         const result = []
@@ -78,48 +78,30 @@ ApplicationWindow {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
+                anchors.leftMargin: 0
+                anchors.rightMargin: 14
                 anchors.topMargin: 12
                 anchors.bottomMargin: 12
                 spacing: 8
 
                 RowLayout {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 52
-                    Layout.leftMargin: 8
-                    Layout.rightMargin: 8
+                    Layout.preferredHeight: 70
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
                     spacing: 12
                     ToolButton {
                         Layout.preferredWidth: 40
                         Layout.preferredHeight: 40
                         onClicked: window.railExpanded = !window.railExpanded
-                        contentItem: Label { text: "☰"; color: Theme.textSecondary; font.pixelSize: 19; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        contentItem: Label { text: "☰"; color: Theme.textSecondary; font.pixelSize: 20; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         background: Rectangle { radius: 20; color: parent.hovered ? Theme.surfaceHover : "transparent" }
                         AppToolTip { visible: parent.hovered; text: window.railExpanded ? "Свернуть меню" : "Развернуть меню" }
                     }
-                    Rectangle {
-                        visible: window.railExpanded
-                        Layout.preferredWidth: 38
-                        Layout.preferredHeight: 38
-                        radius: 12
-                        color: Theme.accentSubtle
-                        Image {
-                            anchors.centerIn: parent
-                            width: 24
-                            height: 24
-                            source: "qrc:/qt/qml/Isora/qml/assets/icons/app.svg"
-                        }
-                    }
-                    Label {
-                        visible: !window.compactRail
-                        Layout.fillWidth: true
-                        text: "Isora"
-                        color: Theme.text
-                        font.pixelSize: 17
-                        font.weight: Font.DemiBold
-                    }
+                    Item { Layout.fillWidth: true }
                 }
+
+                Item { Layout.preferredHeight: 8 }
 
                 RailButton {
                     text: "Машины"
@@ -145,31 +127,6 @@ ApplicationWindow {
 
                 Item { Layout.fillHeight: true }
 
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 1
-                    color: Theme.border
-                }
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 52
-                    Layout.leftMargin: 12
-                    Layout.rightMargin: 10
-                    spacing: 11
-                    Rectangle {
-                        Layout.preferredWidth: 9
-                        Layout.preferredHeight: 9
-                        radius: 5
-                        color: App.systemReady ? Theme.success : Theme.warning
-                    }
-                    ColumnLayout {
-                        visible: !window.compactRail
-                        Layout.fillWidth: true
-                        spacing: 1
-                        Label { text: "Система"; color: Theme.text; font.pixelSize: 12; font.weight: Font.DemiBold }
-                        Label { text: App.systemReady ? "KVM доступен" : "Требуется проверка"; color: Theme.textMuted; font.pixelSize: 9 }
-                    }
-                }
             }
         }
 
@@ -180,7 +137,7 @@ ApplicationWindow {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 64
+                Layout.preferredHeight: 70
                 color: Theme.surface
                 Rectangle {
                     anchors.bottom: parent.bottom
@@ -190,7 +147,7 @@ ApplicationWindow {
                 }
                 RowLayout {
                     anchors.fill: parent
-                    anchors.leftMargin: 28
+                    anchors.leftMargin: 64
                     anchors.rightMargin: 24
                     spacing: 12
                     ToolButton {
@@ -204,7 +161,7 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         text: window.pageTitle()
                         color: Theme.text
-                        font.pixelSize: 20
+                        font.pixelSize: 24
                         font.weight: Font.DemiBold
                         elide: Text.ElideRight
                     }
@@ -213,12 +170,12 @@ ApplicationWindow {
                         text: "+"
                         enabled: App.connected && !App.busy
                         onClicked: machinesPage.openCreateDialog()
-                        contentItem: Label { text: parent.text; color: Theme.accentText; font.pixelSize: 24; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
-                        background: Rectangle { radius: 20; color: parent.hovered ? Theme.accentHover : Theme.accent; opacity: parent.enabled ? 1 : 0.42 }
+                        contentItem: Label { text: parent.text; color: Theme.textSecondary; font.pixelSize: 26; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        background: Rectangle { radius: 20; color: parent.hovered ? Theme.surfaceHover : "transparent"; opacity: parent.enabled ? 1 : 0.42 }
                         AppToolTip { visible: parent.hovered; text: "Новая машина" }
                     }
                     ToolButton {
-                        visible: window.currentPage !== 2
+                        visible: window.currentPage !== 2 && !(window.currentPage === 0 && machinesPage.route === "overview")
                         enabled: !App.busy
                         onClicked: App.refresh()
                         contentItem: Image { anchors.centerIn: parent; width: 20; height: 20; source: "qrc:/qt/qml/Isora/qml/assets/icons/refresh.svg" }
@@ -255,22 +212,22 @@ ApplicationWindow {
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 28
-                        anchors.rightMargin: 20
-                        anchors.topMargin: 32
-                        anchors.bottomMargin: 24
-                        spacing: 16
+                        anchors.leftMargin: 32
+                        anchors.rightMargin: 17
+                        anchors.topMargin: 46
+                        anchors.bottomMargin: 98
+                        spacing: 12
 
                         Rectangle {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 56
-                            radius: 28
+                            Layout.preferredHeight: 64
+                            radius: 32
                             color: searchField.activeFocus ? Theme.surfaceRaised : Theme.surface
                             border.width: searchField.activeFocus ? 2 : 1
                             border.color: searchField.activeFocus ? Theme.accent : Theme.border
                             Image {
                                 anchors.left: parent.left
-                                anchors.leftMargin: 16
+                                anchors.leftMargin: 20
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: 18
                                 height: 18
@@ -279,14 +236,14 @@ ApplicationWindow {
                             TextInput {
                                 id: searchField
                                 anchors.left: parent.left
-                                anchors.leftMargin: 46
+                                anchors.leftMargin: 58
                                 anchors.right: clearSearch.visible ? clearSearch.left : parent.right
                                 anchors.rightMargin: clearSearch.visible ? 4 : 16
                                 anchors.verticalCenter: parent.verticalCenter
                                 color: Theme.text
                                 selectionColor: Theme.accent
                                 selectedTextColor: Theme.accentText
-                                font.pixelSize: 12
+                                font.pixelSize: 16
                                 clip: true
                                 Label {
                                     anchors.fill: parent
@@ -315,8 +272,9 @@ ApplicationWindow {
                         ListView {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
+                            Layout.topMargin: 10
                             model: window.filteredMachines
-                            spacing: 8
+                            spacing: 4
                             clip: true
                             boundsBehavior: Flickable.StopAtBounds
                             ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
@@ -327,6 +285,37 @@ ApplicationWindow {
                                 iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"
                                 title: searchField.text.length > 0 ? "Ничего не найдено" : "Машин пока нет"
                                 description: ""
+                            }
+                        }
+
+                        Rectangle {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 82
+                            radius: 22
+                            color: Theme.surface
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.leftMargin: 18
+                                anchors.rightMargin: 18
+                                spacing: 14
+                                Rectangle {
+                                    Layout.preferredWidth: 46
+                                    Layout.preferredHeight: 46
+                                    radius: 23
+                                    color: Theme.accentSubtle
+                                    Image {
+                                        anchors.centerIn: parent
+                                        width: 24
+                                        height: 24
+                                        source: "qrc:/qt/qml/Isora/qml/assets/icons/shield.svg"
+                                    }
+                                }
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 2
+                                    Label { text: "Система"; color: Theme.text; font.pixelSize: 16; font.weight: Font.Medium }
+                                    Label { text: App.systemReady ? "KVM доступен" : "Требуется проверка"; color: Theme.textSecondary; font.pixelSize: 12 }
+                                }
                             }
                         }
                     }
@@ -416,16 +405,16 @@ ApplicationWindow {
         property url iconSource
         property bool selected: false
         Layout.fillWidth: true
-        implicitHeight: window.compactRail ? 64 : 56
-        leftPadding: window.compactRail ? 0 : 14
-        rightPadding: window.compactRail ? 0 : 14
+        implicitHeight: window.compactRail ? 64 : 64
+        leftPadding: window.compactRail ? 0 : 20
+        rightPadding: window.compactRail ? 0 : 20
         contentItem: Item {
             RowLayout {
                 visible: !window.compactRail
                 anchors.fill: parent
                 spacing: 12
                 Image { Layout.preferredWidth: 21; Layout.preferredHeight: 21; source: control.iconSource }
-                Label { Layout.fillWidth: true; text: control.text; color: control.selected ? Theme.secondaryContainerText : Theme.textSecondary; font.pixelSize: 13; font.weight: control.selected ? Font.DemiBold : Font.Normal }
+                Label { Layout.fillWidth: true; text: control.text; color: control.selected ? Theme.secondaryContainerText : Theme.textSecondary; font.pixelSize: 15; font.weight: control.selected ? Font.DemiBold : Font.Normal }
             }
             ColumnLayout {
                 visible: window.compactRail
@@ -435,7 +424,7 @@ ApplicationWindow {
                 Label { Layout.alignment: Qt.AlignHCenter; text: control.text; color: control.selected ? Theme.secondaryContainerText : Theme.textSecondary; font.pixelSize: 9 }
             }
         }
-        background: Rectangle { radius: window.compactRail ? 18 : 16; color: control.selected ? Theme.accentSubtle : (control.hovered ? Theme.surfaceHover : "transparent"); border.width: control.activeFocus ? 2 : 0; border.color: Theme.accent }
+        background: Rectangle { radius: window.compactRail ? 18 : 32; color: control.selected ? Theme.secondaryContainer : (control.hovered ? Theme.surfaceHover : "transparent"); border.width: control.activeFocus ? 2 : 0; border.color: Theme.accent }
         AppToolTip { visible: window.compactRail && control.hovered; text: control.text }
     }
 
@@ -443,9 +432,9 @@ ApplicationWindow {
         id: machineControl
         required property var modelData
         width: ListView.view.width
-        height: 72
-        leftPadding: 12
-        rightPadding: 12
+        height: 82
+        leftPadding: 18
+        rightPadding: 16
         onClicked: {
             window.selectedMachineId = modelData.id
             machinesPage.showOverview()
@@ -453,24 +442,29 @@ ApplicationWindow {
         contentItem: RowLayout {
             spacing: 12
             Rectangle {
-                Layout.preferredWidth: 42
-                Layout.preferredHeight: 42
-                radius: 14
-                color: window.machineColor(machineControl.modelData.id)
-                Label { anchors.centerIn: parent; text: machineControl.modelData.name.length > 0 ? machineControl.modelData.name.charAt(0).toUpperCase() : "VM"; color: "white"; font.pixelSize: 13; font.weight: Font.Bold }
+                Layout.preferredWidth: 46
+                Layout.preferredHeight: 46
+                radius: 23
+                color: window.selectedMachineId === machineControl.modelData.id ? "transparent" : Theme.accentSubtle
+                Image {
+                    anchors.centerIn: parent
+                    width: 24
+                    height: 24
+                    source: machineControl.modelData.running
+                        ? "qrc:/qt/qml/Isora/qml/assets/icons/activity.svg"
+                        : "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"
+                }
             }
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
-                Label { Layout.fillWidth: true; text: machineControl.modelData.name; color: Theme.text; elide: Text.ElideRight; font.pixelSize: 12; font.weight: Font.DemiBold }
-                Label { Layout.fillWidth: true; text: (machineControl.modelData.running ? "Работает" : "Выключена") + " · " + machineControl.modelData.resources; color: Theme.textSecondary; elide: Text.ElideRight; font.pixelSize: 10 }
+                spacing: 3
+                Label { Layout.fillWidth: true; text: machineControl.modelData.name; color: Theme.text; elide: Text.ElideRight; font.pixelSize: 16; font.weight: Font.Medium }
+                Label { Layout.fillWidth: true; text: window.machineResourcesSummary(machineControl.modelData); color: Theme.textSecondary; elide: Text.ElideRight; font.pixelSize: 12 }
             }
-            Rectangle { Layout.preferredWidth: 7; Layout.preferredHeight: 7; radius: 4; color: machineControl.modelData.running ? Theme.success : Theme.textMuted }
         }
         background: Rectangle {
-            radius: 17
-            color: window.selectedMachineId === machineControl.modelData.id ? Theme.surfaceRaised : (machineControl.hovered ? Theme.surfaceHover : "transparent")
-            Rectangle { visible: window.selectedMachineId === machineControl.modelData.id; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; width: 3; height: 34; radius: 2; color: Theme.accent }
+            radius: 18
+            color: window.selectedMachineId === machineControl.modelData.id ? Theme.accentSubtle : (machineControl.hovered ? Theme.surfaceHover : Theme.surface)
         }
     }
 
@@ -497,6 +491,13 @@ ApplicationWindow {
         for (let index = 0; index < id.length; ++index)
             hash = (hash + id.charCodeAt(index)) % colors.length
         return colors[hash]
+    }
+
+    function machineResourcesSummary(machine) {
+        const memory = machine.memoryMiB % 1024 === 0
+            ? machine.memoryMiB / 1024 + " ГБ"
+            : machine.memoryMiB + " МБ"
+        return (machine.running ? "Работает" : "Выключена") + " · " + memory + " · " + machine.cpuCount + " CPU"
     }
 
     function pageTitle() {
