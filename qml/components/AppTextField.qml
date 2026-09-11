@@ -13,7 +13,7 @@ TextField {
     selectedTextColor: Theme.accentText
     font.pixelSize: 13
     background: Rectangle {
-        radius: Theme.radiusControl
+        radius: 16
         color: Theme.surfaceRaised
         border.width: control.activeFocus ? 2 : 1
         border.color: control.activeFocus ? Theme.accent : Theme.border

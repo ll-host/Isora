@@ -24,8 +24,9 @@ ApplicationWindow {
     property int currentPage: 0
     property string testDialog: ""
     property string selectedMachineId: ""
-    readonly property bool compactRail: width < 1160
-    readonly property int railWidth: compactRail ? 88 : 220
+    property bool railExpanded: width >= 1160
+    readonly property bool compactRail: !railExpanded
+    readonly property int railWidth: railExpanded ? 220 : 96
     readonly property bool machinePanelVisible: currentPage === 0 && machinesPage.route === "overview"
     readonly property int machinePanelWidth: width < 1240 ? 300 : 376
     readonly property var selectedMachine: machineById(selectedMachineId)
@@ -89,7 +90,16 @@ ApplicationWindow {
                     Layout.leftMargin: 8
                     Layout.rightMargin: 8
                     spacing: 12
+                    ToolButton {
+                        Layout.preferredWidth: 40
+                        Layout.preferredHeight: 40
+                        onClicked: window.railExpanded = !window.railExpanded
+                        contentItem: Label { text: "☰"; color: Theme.textSecondary; font.pixelSize: 19; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        background: Rectangle { radius: 20; color: parent.hovered ? Theme.surfaceHover : "transparent" }
+                        AppToolTip { visible: parent.hovered; text: window.railExpanded ? "Свернуть меню" : "Развернуть меню" }
+                    }
                     Rectangle {
+                        visible: window.railExpanded
                         Layout.preferredWidth: 38
                         Layout.preferredHeight: 38
                         radius: 12
@@ -170,7 +180,7 @@ ApplicationWindow {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 72
+                Layout.preferredHeight: 64
                 color: Theme.surface
                 Rectangle {
                     anchors.bottom: parent.bottom
@@ -253,8 +263,8 @@ ApplicationWindow {
 
                         Rectangle {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 48
-                            radius: 24
+                            Layout.preferredHeight: 56
+                            radius: 28
                             color: searchField.activeFocus ? Theme.surfaceRaised : Theme.surface
                             border.width: searchField.activeFocus ? 2 : 1
                             border.color: searchField.activeFocus ? Theme.accent : Theme.border
@@ -406,13 +416,24 @@ ApplicationWindow {
         property url iconSource
         property bool selected: false
         Layout.fillWidth: true
-        implicitHeight: window.compactRail ? 58 : 48
+        implicitHeight: window.compactRail ? 64 : 56
         leftPadding: window.compactRail ? 0 : 14
         rightPadding: window.compactRail ? 0 : 14
-        contentItem: RowLayout {
-            spacing: 12
-            Image { Layout.alignment: Qt.AlignHCenter; Layout.preferredWidth: 21; Layout.preferredHeight: 21; source: control.iconSource }
-            Label { visible: !window.compactRail; Layout.fillWidth: true; text: control.text; color: control.selected ? Theme.text : Theme.textSecondary; font.pixelSize: 13; font.weight: control.selected ? Font.DemiBold : Font.Normal }
+        contentItem: Item {
+            RowLayout {
+                visible: !window.compactRail
+                anchors.fill: parent
+                spacing: 12
+                Image { Layout.preferredWidth: 21; Layout.preferredHeight: 21; source: control.iconSource }
+                Label { Layout.fillWidth: true; text: control.text; color: control.selected ? Theme.onSecondaryContainer : Theme.textSecondary; font.pixelSize: 13; font.weight: control.selected ? Font.DemiBold : Font.Normal }
+            }
+            ColumnLayout {
+                visible: window.compactRail
+                anchors.centerIn: parent
+                spacing: 3
+                Image { Layout.alignment: Qt.AlignHCenter; Layout.preferredWidth: 21; Layout.preferredHeight: 21; source: control.iconSource }
+                Label { Layout.alignment: Qt.AlignHCenter; text: control.text; color: control.selected ? Theme.onSecondaryContainer : Theme.textSecondary; font.pixelSize: 9 }
+            }
         }
         background: Rectangle { radius: window.compactRail ? 18 : 16; color: control.selected ? Theme.accentSubtle : (control.hovered ? Theme.surfaceHover : "transparent"); border.width: control.activeFocus ? 2 : 0; border.color: Theme.accent }
         AppToolTip { visible: window.compactRail && control.hovered; text: control.text }
@@ -422,7 +443,7 @@ ApplicationWindow {
         id: machineControl
         required property var modelData
         width: ListView.view.width
-        height: 68
+        height: 72
         leftPadding: 12
         rightPadding: 12
         onClicked: {
@@ -442,7 +463,7 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 spacing: 4
                 Label { Layout.fillWidth: true; text: machineControl.modelData.name; color: Theme.text; elide: Text.ElideRight; font.pixelSize: 12; font.weight: Font.DemiBold }
-                Label { Layout.fillWidth: true; text: machineControl.modelData.running ? "Работает" : "Выключена"; color: machineControl.modelData.running ? Theme.success : Theme.textMuted; elide: Text.ElideRight; font.pixelSize: 9 }
+                Label { Layout.fillWidth: true; text: (machineControl.modelData.running ? "Работает" : "Выключена") + " · " + machineControl.modelData.resources; color: Theme.textSecondary; elide: Text.ElideRight; font.pixelSize: 10 }
             }
             Rectangle { Layout.preferredWidth: 7; Layout.preferredHeight: 7; radius: 4; color: machineControl.modelData.running ? Theme.success : Theme.textMuted }
         }

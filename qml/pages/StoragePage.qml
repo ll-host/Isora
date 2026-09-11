@@ -47,41 +47,42 @@ Item {
 
             Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; color: Theme.border }
             SectionHeader { title: "ISO-образы"; actionText: "Добавить ISO"; onTriggered: images.openPicker() }
-            ImagesPage {
-                id: images
+            RowLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 280
-                compact: true
-                embedded: true
-                testDialogName: root.testDialogName
-            }
-
-            Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; color: Theme.border }
-            SectionHeader {
-                title: root.selectedMachine ? "Резервные копии · " + root.selectedMachine.name : "Резервные копии"
-                actionText: "Открыть"
-                actionEnabled: root.selectedMachine !== null && !root.selectedMachine.running
-                onTriggered: root.openBackups()
-            }
-            Surface {
-                Layout.fillWidth: true
-                implicitHeight: 90
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 17
-                    spacing: 14
-                    Rectangle {
-                        Layout.preferredWidth: 46
-                        Layout.preferredHeight: 46
-                        radius: 14
-                        color: Theme.accentSubtle
-                        Image { anchors.centerIn: parent; width: 23; height: 23; source: "qrc:/qt/qml/Isora/qml/assets/icons/backup.svg" }
-                    }
-                    ColumnLayout {
+                spacing: 24
+                ImagesPage {
+                    id: images
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    compact: true
+                    embedded: true
+                    testDialogName: root.testDialogName
+                }
+                ColumnLayout {
+                    Layout.preferredWidth: 280
+                    Layout.fillHeight: true
+                    spacing: 12
+                    Surface {
                         Layout.fillWidth: true
-                        spacing: 4
-                        Label { text: root.selectedMachine ? "Копии системного диска" : "Выберите машину"; color: Theme.text; font.pixelSize: 14; font.weight: Font.DemiBold }
-                        Label { Layout.fillWidth: true; text: App.backupDirectory; color: Theme.textMuted; font.pixelSize: 10; elide: Text.ElideMiddle }
+                        Layout.fillHeight: true
+                        color: Theme.surfaceHover
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 20
+                            spacing: 10
+                            Rectangle {
+                                Layout.preferredWidth: 48
+                                Layout.preferredHeight: 48
+                                radius: 16
+                                color: Theme.accentSubtle
+                                Image { anchors.centerIn: parent; width: 24; height: 24; source: "qrc:/qt/qml/Isora/qml/assets/icons/backup.svg" }
+                            }
+                            Label { text: "Резервные копии"; color: Theme.text; font.pixelSize: 17; font.weight: Font.DemiBold }
+                            Label { Layout.fillWidth: true; text: root.selectedMachine ? root.selectedMachine.name : "Выберите машину"; color: Theme.textSecondary; font.pixelSize: 12; elide: Text.ElideRight }
+                            Item { Layout.fillHeight: true }
+                            ActionButton { Layout.fillWidth: true; text: "Создать копию"; enabled: root.selectedMachine !== null && !root.selectedMachine.running; onClicked: root.openBackups() }
+                        }
                     }
                 }
             }

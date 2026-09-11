@@ -160,7 +160,7 @@ run_local_tests() {
 capture_ui_preview() {
     configure_development_build || return 1
 
-    local preview_dir config_dir name
+    local preview_dir config_dir name width height
     local -a command
     preview_dir="${DIST_DIR}/previews"
     config_dir="$(mktemp -d)" || return 1
@@ -169,12 +169,18 @@ capture_ui_preview() {
         return 1
     }
 
-    for name in machines create machine-settings images settings; do
-        command=("${PROJECT_ROOT}/build/isora" --width 1420 --height 860 --screenshot "${preview_dir}/${name}.png")
+    for name in machines machines-compact create machine-settings images settings; do
+        width=1280
+        height=800
+        if [[ "$name" == 'machines-compact' ]]; then
+            width=1024
+            height=680
+        fi
+        command=("${PROJECT_ROOT}/build/isora" --width "$width" --height "$height" --screenshot "${preview_dir}/${name}.png")
         case "$name" in
             create|machine-settings) command+=(--dialog "$name") ;;
             images|settings) command+=(--page "$name") ;;
-            machines) command+=(--page machines) ;;
+            machines|machines-compact) command+=(--page machines) ;;
         esac
         if ! XDG_CONFIG_HOME="$config_dir" QT_QPA_PLATFORM=offscreen QSG_RHI_BACKEND=software "${command[@]}"; then
             rm -rf -- "$config_dir"

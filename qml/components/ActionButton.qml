@@ -51,7 +51,7 @@ Button {
     }
 
     background: Rectangle {
-        radius: Theme.radiusControl
+        radius: height / 2
         color: control.down ? (control.accent ? Theme.accent : Theme.surfaceHover)
                             : control.danger ? (control.hovered ? Theme.dangerHover : Theme.dangerSurface)
                             : control.accent ? (control.hovered ? Theme.accentHover : Theme.accent)

@@ -79,67 +79,48 @@ Item {
                 ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
                 ColumnLayout {
                     id: createContent
-                    width: Math.min(860, parent.width - 64)
+                    width: Math.min(1000, parent.width - 64)
                     x: (parent.width - width) / 2
                     y: 32
-                    spacing: 20
-                    BackHeader { title: "Новая виртуальная машина"; onBack: root.showOverview() }
-                    SectionHeading { title: "Основное" }
-                    Surface {
+                    spacing: 24
+                    RowLayout {
                         Layout.fillWidth: true
-                        implicitHeight: createBasics.implicitHeight + 40
+                        spacing: 32
+                        Label { Layout.fillWidth: true; text: "Основное"; color: Theme.text; font.pixelSize: 22; font.weight: Font.Bold }
+                        Label { Layout.fillWidth: true; text: "Ресурсы"; color: Theme.text; font.pixelSize: 22; font.weight: Font.Bold }
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 224
+                        spacing: 32
                         ColumnLayout {
-                            id: createBasics
-                            anchors.fill: parent
-                            anchors.margins: 20
-                            spacing: 10
-                            FieldLabel { text: "Название" }
-                            AppTextField { id: createName; Layout.fillWidth: true; placeholderText: "Например, рабочая станция"; selectByMouse: true }
-                            FieldLabel { text: "Загрузочный ISO" }
-                            ComboBox { id: createImage; Layout.fillWidth: true; implicitHeight: 52; model: App.images; textRole: "name"; valueRole: "id" }
-                            ActionButton { visible: App.images.length === 0; text: "Перейти в раздел ISO-образов"; onClicked: root.openImages() }
+                            Layout.fillWidth: true
+                            spacing: 12
+                            AppTextField { id: createName; Layout.fillWidth: true; placeholderText: "Название"; selectByMouse: true }
+                            ComboBox { id: createImage; Layout.fillWidth: true; implicitHeight: 56; model: App.images; textRole: "name"; valueRole: "id" }
+                            ActionButton { visible: App.images.length === 0; text: "Добавить ISO"; onClicked: root.openImages() }
+                        }
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 3
+                            ResourceRow { title: "Память"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/activity.svg"; control: AppSpinBox { id: createMemory; from: 1024; to: 262144; stepSize: 1024; value: App.defaultMemoryMiB; textFromValue: function(v) { return root.memoryText(v) } } }
+                            ResourceRow { title: "Процессоры"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"; control: AppSpinBox { id: createCpu; from: 1; to: 256; value: App.defaultCpuCount } }
+                            ResourceRow { title: "Диск"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/drive.svg"; control: AppSpinBox { id: createDisk; from: 8; to: 2048; value: App.defaultDiskGiB; textFromValue: function(v) { return v + " ГиБ" } } }
                         }
                     }
-                    SectionHeading { title: "Ресурсы" }
-                    Surface {
+                    Label { text: "Параметры"; color: Theme.text; font.pixelSize: 22; font.weight: Font.Bold }
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        implicitHeight: createResources.implicitHeight + 40
-                        RowLayout {
-                            id: createResources
-                            anchors.fill: parent
-                            anchors.margins: 20
-                            spacing: 16
-                            FormField {
-                                label: "Оперативная память"
-                                AppSpinBox { id: createMemory; Layout.fillWidth: true; from: 1024; to: 262144; stepSize: 1024; value: App.defaultMemoryMiB; textFromValue: function(v) { return root.memoryText(v) } }
-                            }
-                            FormField {
-                                label: "Процессоры"
-                                AppSpinBox { id: createCpu; Layout.fillWidth: true; from: 1; to: 256; value: App.defaultCpuCount }
-                            }
-                            FormField {
-                                label: "Максимальный размер диска"
-                                AppSpinBox { id: createDisk; Layout.fillWidth: true; from: 8; to: 2048; value: App.defaultDiskGiB; textFromValue: function(v) { return v + " ГиБ" } }
-                            }
-                        }
-                    }
-                    Surface {
-                        Layout.fillWidth: true
-                        implicitHeight: 84
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: 20
-                            AppSwitch { id: createEfi; text: "UEFI"; checked: App.defaultUseEfi }
-                            AppSwitch { id: create3d; text: "3D-ускорение"; checked: App.defaultUse3d; enabled: App.intelRenderAvailable }
-                            Item { Layout.fillWidth: true }
-                        }
+                        spacing: 3
+                        ToggleRow { title: "UEFI"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/activity.svg"; control: AppSwitch { id: createEfi; checked: App.defaultUseEfi } }
+                        ToggleRow { title: "3D-ускорение"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; control: AppSwitch { id: create3d; checked: App.defaultUse3d; enabled: App.intelRenderAvailable } }
                     }
                     RowLayout {
                         Layout.fillWidth: true
                         ActionButton { text: "Подключить существующий QCOW2"; onClicked: root.openImport() }
                         Item { Layout.fillWidth: true }
                         ActionButton { text: "Отмена"; onClicked: root.showOverview() }
-                        ActionButton { text: "Создать машину"; accent: true; enabled: createName.text.trim().length > 0 && createImage.currentIndex >= 0 && !App.busy; onClicked: App.createMachine(createName.text, createImage.currentValue, createMemory.value, createCpu.value, createDisk.value, createEfi.checked, create3d.checked) }
+                        ActionButton { text: "Создать"; accent: true; enabled: createName.text.trim().length > 0 && createImage.currentIndex >= 0 && !App.busy; onClicked: App.createMachine(createName.text, createImage.currentValue, createMemory.value, createCpu.value, createDisk.value, createEfi.checked, create3d.checked) }
                     }
                 }
             }
@@ -389,6 +370,46 @@ Item {
     component SectionHeading: ColumnLayout {
         property string title: ""
         Label { text: parent.title; color: Theme.text; font.pixelSize: 18; font.weight: Font.DemiBold }
+    }
+
+    component ResourceRow: Rectangle {
+        id: resourceRow
+        property string title: ""
+        property url iconSource
+        property Item control
+        Layout.fillWidth: true
+        Layout.preferredHeight: 72
+        radius: 8
+        color: Theme.surface
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 16
+            anchors.rightMargin: 12
+            spacing: 14
+            Image { Layout.preferredWidth: 24; Layout.preferredHeight: 24; source: resourceRow.iconSource }
+            Label { Layout.fillWidth: true; text: resourceRow.title; color: Theme.text; font.pixelSize: 14 }
+            Item { Layout.preferredWidth: resourceRow.control ? resourceRow.control.implicitWidth : 0; Layout.preferredHeight: 56; Component.onCompleted: if (resourceRow.control) resourceRow.control.parent = this }
+        }
+    }
+
+    component ToggleRow: Rectangle {
+        id: toggleRow
+        property string title: ""
+        property url iconSource
+        property Item control
+        Layout.fillWidth: true
+        Layout.preferredHeight: 72
+        radius: 8
+        color: Theme.surface
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            spacing: 14
+            Image { Layout.preferredWidth: 24; Layout.preferredHeight: 24; source: toggleRow.iconSource }
+            Label { Layout.fillWidth: true; text: toggleRow.title; color: Theme.text; font.pixelSize: 14 }
+            Item { Layout.preferredWidth: toggleRow.control ? toggleRow.control.implicitWidth : 0; Layout.preferredHeight: 56; Component.onCompleted: if (toggleRow.control) toggleRow.control.parent = this }
+        }
     }
 
     component FieldLabel: Label { color: Theme.textSecondary; font.pixelSize: 12; font.weight: Font.Medium }
