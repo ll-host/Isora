@@ -116,7 +116,25 @@ Item {
             anchors.rightMargin: 8
             spacing: 14
             Image { Layout.preferredWidth: 22; Layout.preferredHeight: 22; source: row.iconSource }
-            ColumnLayout { Layout.fillWidth: true; spacing: 3; Label { Layout.fillWidth: true; text: row.title; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold; elide: Text.ElideRight }; Label { Layout.fillWidth: true; text: row.detail; color: Theme.textMuted; font.pixelSize: 10; elide: Text.ElideRight } }
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 3
+                Label {
+                    Layout.fillWidth: true
+                    text: row.title
+                    color: Theme.text
+                    font.pixelSize: 13
+                    font.weight: Font.DemiBold
+                    elide: Text.ElideRight
+                }
+                Label {
+                    Layout.fillWidth: true
+                    text: row.detail
+                    color: Theme.textMuted
+                    font.pixelSize: 10
+                    elide: Text.ElideRight
+                }
+            }
             ActionButton { text: row.actionText; onClicked: row.triggered() }
         }
     }

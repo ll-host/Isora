@@ -218,7 +218,23 @@ ApplicationWindow {
                 Layout.preferredHeight: visible ? 50 : 0
                 visible: App.message.length > 0
                 color: Theme.dangerSurface
-                RowLayout { anchors.fill: parent; anchors.leftMargin: 20; anchors.rightMargin: 12; spacing: 12; Label { Layout.fillWidth: true; text: App.message; color: Theme.dangerText; font.pixelSize: 12; elide: Text.ElideRight }; ActionButton { text: "Закрыть"; onClicked: App.clearMessage() } }
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 20
+                    anchors.rightMargin: 12
+                    spacing: 12
+                    Label {
+                        Layout.fillWidth: true
+                        text: App.message
+                        color: Theme.dangerText
+                        font.pixelSize: 12
+                        elide: Text.ElideRight
+                    }
+                    ActionButton {
+                        text: "Закрыть"
+                        onClicked: App.clearMessage()
+                    }
+                }
             }
 
             StackLayout {
@@ -274,7 +290,33 @@ ApplicationWindow {
             anchors.fill: parent
             anchors.margins: 13
             spacing: 7
-            RowLayout { Layout.fillWidth: true; Image { Layout.preferredWidth: 20; Layout.preferredHeight: 20; source: "qrc:/qt/qml/Isora/qml/assets/icons/refresh.svg"; RotationAnimator on rotation { from: 0; to: 360; duration: 900; loops: Animation.Infinite; running: App.busy } }; Label { Layout.fillWidth: true; text: App.operationTitle; color: Theme.text; font.pixelSize: 13; font.weight: Font.DemiBold }; Label { text: App.operationProgress >= 0 ? App.operationProgress + "%" : App.operationDetail; color: Theme.textSecondary; font.pixelSize: 12 } }
+            RowLayout {
+                Layout.fillWidth: true
+                Image {
+                    Layout.preferredWidth: 20
+                    Layout.preferredHeight: 20
+                    source: "qrc:/qt/qml/Isora/qml/assets/icons/refresh.svg"
+                    RotationAnimator on rotation {
+                        from: 0
+                        to: 360
+                        duration: 900
+                        loops: Animation.Infinite
+                        running: App.busy
+                    }
+                }
+                Label {
+                    Layout.fillWidth: true
+                    text: App.operationTitle
+                    color: Theme.text
+                    font.pixelSize: 13
+                    font.weight: Font.DemiBold
+                }
+                Label {
+                    text: App.operationProgress >= 0 ? App.operationProgress + "%" : App.operationDetail
+                    color: Theme.textSecondary
+                    font.pixelSize: 12
+                }
+            }
             AppProgress { Layout.fillWidth: true; visible: App.operationProgress >= 0; from: 0; to: 100; value: App.operationProgress }
         }
     }
@@ -287,7 +329,23 @@ ApplicationWindow {
         implicitHeight: window.compact ? 58 : 48
         leftPadding: window.compact ? 0 : 14
         rightPadding: window.compact ? 0 : 14
-        contentItem: RowLayout { spacing: 12; Image { Layout.alignment: Qt.AlignHCenter; Layout.preferredWidth: 21; Layout.preferredHeight: 21; source: control.iconSource }; Label { visible: !window.compact; Layout.fillWidth: true; text: control.text; color: control.selected ? Theme.text : Theme.textSecondary; font.pixelSize: 13; font.weight: control.selected ? Font.DemiBold : Font.Normal } }
+        contentItem: RowLayout {
+            spacing: 12
+            Image {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.preferredWidth: 21
+                Layout.preferredHeight: 21
+                source: control.iconSource
+            }
+            Label {
+                visible: !window.compact
+                Layout.fillWidth: true
+                text: control.text
+                color: control.selected ? Theme.text : Theme.textSecondary
+                font.pixelSize: 13
+                font.weight: control.selected ? Font.DemiBold : Font.Normal
+            }
+        }
         background: Rectangle { radius: window.compact ? 18 : 16; color: control.selected ? Theme.accentSubtle : (control.hovered ? Theme.surfaceHover : "transparent"); border.width: control.activeFocus ? 2 : 0; border.color: Theme.accent }
         AppToolTip { visible: window.compact && control.hovered; text: control.text }
     }
@@ -303,7 +361,25 @@ ApplicationWindow {
         contentItem: RowLayout {
             spacing: 11
             Rectangle { Layout.preferredWidth: 40; Layout.preferredHeight: 40; radius: 13; color: window.machineColor(machineControl.modelData.id); Label { anchors.centerIn: parent; text: machineControl.modelData.name.length > 0 ? machineControl.modelData.name.charAt(0).toUpperCase() : "VM"; color: "white"; font.pixelSize: 13; font.weight: Font.Bold } }
-            ColumnLayout { Layout.fillWidth: true; spacing: 3; Label { Layout.fillWidth: true; text: machineControl.modelData.name; color: Theme.text; elide: Text.ElideRight; font.pixelSize: 12; font.weight: Font.DemiBold }; Label { Layout.fillWidth: true; text: machineControl.modelData.running ? "Работает" : "Выключена"; color: machineControl.modelData.running ? Theme.success : Theme.textMuted; elide: Text.ElideRight; font.pixelSize: 9 } }
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 3
+                Label {
+                    Layout.fillWidth: true
+                    text: machineControl.modelData.name
+                    color: Theme.text
+                    elide: Text.ElideRight
+                    font.pixelSize: 12
+                    font.weight: Font.DemiBold
+                }
+                Label {
+                    Layout.fillWidth: true
+                    text: machineControl.modelData.running ? "Работает" : "Выключена"
+                    color: machineControl.modelData.running ? Theme.success : Theme.textMuted
+                    elide: Text.ElideRight
+                    font.pixelSize: 9
+                }
+            }
             Rectangle { Layout.preferredWidth: 7; Layout.preferredHeight: 7; radius: 4; color: machineControl.modelData.running ? Theme.success : Theme.textMuted }
         }
         background: Rectangle { radius: 16; color: window.selectedMachineId === machineControl.modelData.id ? Theme.surfaceRaised : (machineControl.hovered ? Theme.surfaceHover : "transparent"); Rectangle { visible: window.selectedMachineId === machineControl.modelData.id; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; width: 3; height: 32; radius: 2; color: Theme.accent } }
