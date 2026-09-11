@@ -60,9 +60,12 @@ Item {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 2
-                            Label { text: "ВИРТУАЛЬНАЯ МАШИНА"; color: Theme.accent; font.pixelSize: 9; font.weight: Font.Bold; font.letterSpacing: 0.7 }
                             Label { Layout.fillWidth: true; text: root.machine ? root.machine.name : ""; color: Theme.text; font.pixelSize: 26; font.weight: Font.DemiBold; elide: Text.ElideRight }
                             Label { Layout.fillWidth: true; text: root.machine ? root.machine.resources : ""; color: Theme.textMuted; font.pixelSize: 11; elide: Text.ElideRight }
+                        }
+                        StatusBadge {
+                            text: root.machine && root.machine.running ? "Работает" : "Выключена"
+                            good: root.machine && root.machine.running
                         }
                         ActionButton { text: "Консоль"; enabled: root.machine && root.machine.running && !App.busy; onClicked: App.openConsole(root.machine.id) }
                         ActionButton {
@@ -78,14 +81,11 @@ Item {
 
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 0
-                        Metric { title: "Состояние"; value: root.machine ? root.machine.state : "—"; highlighted: root.machine && root.machine.running }
-                        Divider { }
+                        spacing: 12
                         Metric { title: "Память"; value: root.machine ? root.memoryText(root.machine.memoryMiB) : "—" }
-                        Divider { }
                         Metric { title: "Процессоры"; value: root.machine ? String(root.machine.cpuCount) : "—" }
-                        Divider { }
                         Metric { title: "Диск"; value: root.machine ? root.machine.diskGiB + " ГиБ" : "—" }
+                        Metric { title: "Снимки"; value: root.machine ? String(root.machine.snapshots) : "—" }
                     }
                 }
             }
@@ -116,10 +116,9 @@ Item {
                     id: actionColumn
                     anchors.fill: parent
                     spacing: 0
-                    ActionRow { title: "Параметры"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"; onClicked: root.openSettings() }
+                    ActionRow { title: "Оборудование"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"; onClicked: root.openSettings() }
                     ActionRow { title: "Снимки"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"; onClicked: root.openSnapshots() }
-                    ActionRow { title: "Резервные копии"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/backup.svg"; enabled: root.machine && !root.machine.running; onClicked: root.openBackups() }
-                    ActionRow { title: root.machine && root.machine.running ? "Открыть экран" : "Запустить с диска"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; onClicked: root.machine.running ? App.openDisplay(root.machine.id) : App.startMachineFromDisk(root.machine.id) }
+                    ActionRow { title: root.machine && root.machine.running ? "Открыть экран" : "Загрузить ISO"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/disc.svg"; onClicked: root.machine.running ? App.openDisplay(root.machine.id) : App.startMachineFromDisk(root.machine.id) }
                 }
             }
 
@@ -170,17 +169,23 @@ Item {
         Label { text: parent.title; color: Theme.text; font.pixelSize: 17; font.weight: Font.DemiBold }
     }
 
-    component Metric: ColumnLayout {
+    component Metric: Rectangle {
         id: metric
         property string title: ""
         property string value: ""
         property bool highlighted: false
         Layout.fillWidth: true
-        Layout.preferredHeight: 54
-        Layout.leftMargin: 12
-        spacing: 5
-        Label { text: metric.title; color: Theme.textMuted; font.pixelSize: 9 }
-        Label { text: metric.value; color: metric.highlighted ? Theme.accent : Theme.text; font.pixelSize: 16; font.weight: Font.DemiBold }
+        Layout.preferredHeight: 100
+        radius: 18
+        color: Theme.surface
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 16
+            spacing: 7
+            Label { text: metric.value; color: metric.highlighted ? Theme.accent : Theme.text; font.pixelSize: 19; font.weight: Font.DemiBold }
+            Label { text: metric.title; color: Theme.textMuted; font.pixelSize: 10 }
+            Item { Layout.fillHeight: true }
+        }
     }
 
     component Divider: Rectangle {
