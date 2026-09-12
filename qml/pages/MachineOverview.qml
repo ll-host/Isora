@@ -166,6 +166,11 @@ Item {
         bottomInset: 0
         leftPadding: 20
         rightPadding: 20
+        hoverEnabled: true
+        HoverHandler {
+            enabled: headerAction.enabled
+            cursorShape: Qt.PointingHandCursor
+        }
         contentItem: Item {
             RowLayout {
                 anchors.centerIn: parent
@@ -185,10 +190,11 @@ Item {
             topRightRadius: headerAction.last ? 30 : 4
             bottomRightRadius: headerAction.last ? 30 : 4
             color: headerAction.danger
-                ? (headerAction.down ? Theme.dangerHover : Theme.dangerSurface)
+                ? (headerAction.down ? Qt.darker(Theme.dangerSurface, 1.12) : (headerAction.hovered ? Qt.lighter(Theme.dangerSurface, 1.14) : Theme.dangerSurface))
                 : headerAction.accent
-                    ? (headerAction.down ? Theme.accentHover : Theme.accent)
-                    : (headerAction.down ? Theme.surfaceHover : Theme.secondaryContainer)
+                    ? (headerAction.down ? Qt.darker(Theme.accent, 1.08) : (headerAction.hovered ? Theme.accentHover : Theme.accent))
+                    : (headerAction.down ? Theme.surfaceHover : (headerAction.hovered ? Qt.lighter(Theme.secondaryContainer, 1.12) : Theme.secondaryContainer))
+            Behavior on color { ColorAnimation { duration: 110 } }
         }
     }
 
