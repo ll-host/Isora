@@ -26,7 +26,7 @@ ApplicationWindow {
     property string selectedMachineId: ""
     property bool railExpanded: width >= 1160
     readonly property bool compactRail: !railExpanded
-    readonly property int railWidth: railExpanded ? 220 : 96
+    readonly property int railWidth: railExpanded ? 258 : 96
     readonly property bool machinePanelVisible: currentPage === 0 && machinesPage.route === "overview"
     readonly property int machinePanelWidth: width < 1120 ? 320 : 378
     readonly property var selectedMachine: machineById(selectedMachineId)
@@ -71,30 +71,35 @@ ApplicationWindow {
             color: Theme.sidebar
             ColumnLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 0
-                anchors.rightMargin: 14
+                anchors.leftMargin: window.compactRail ? 0 : 7
+                anchors.rightMargin: window.compactRail ? 14 : 15
                 anchors.topMargin: 12
                 anchors.bottomMargin: 12
-                spacing: 8
+                spacing: 0
 
-                RowLayout {
+                Item {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 70
-                    Layout.leftMargin: 20
-                    Layout.rightMargin: 20
-                    spacing: 12
+                    Layout.preferredHeight: window.compactRail ? 70 : 99
                     ToolButton {
-                        Layout.preferredWidth: 40
-                        Layout.preferredHeight: 40
+                        anchors.left: parent.left
+                        anchors.leftMargin: window.compactRail ? 20 : 13
+                        anchors.top: parent.top
+                        anchors.topMargin: window.compactRail ? 15 : 46
+                        width: 40
+                        height: 40
                         onClicked: window.railExpanded = !window.railExpanded
-                        contentItem: Label { text: "☰"; color: Theme.textSecondary; font.pixelSize: 20; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        contentItem: Image {
+                            source: "qrc:/qt/qml/Isora/qml/assets/icons/sidebar-collapse.svg"
+                            sourceSize.width: 24
+                            sourceSize.height: 24
+                            fillMode: Image.Pad
+                        }
                         background: Rectangle { radius: 20; color: parent.hovered ? Theme.surfaceHover : "transparent" }
                         AppToolTip { visible: parent.hovered; text: window.railExpanded ? "Свернуть меню" : "Развернуть меню" }
                     }
-                    Item { Layout.fillWidth: true }
                 }
 
-                Item { Layout.preferredHeight: 8 }
+                Item { Layout.preferredHeight: window.compactRail ? 16 : 0 }
 
                 RailButton {
                     text: "Машины"
@@ -398,16 +403,20 @@ ApplicationWindow {
         property url iconSource
         property bool selected: false
         Layout.fillWidth: true
-        implicitHeight: window.compactRail ? 64 : 64
-        leftPadding: window.compactRail ? 0 : 20
-        rightPadding: window.compactRail ? 0 : 20
+        implicitHeight: window.compactRail ? 64 : 68
+        leftInset: 0
+        rightInset: 0
+        topInset: 0
+        bottomInset: 0
+        leftPadding: window.compactRail ? 0 : 21
+        rightPadding: window.compactRail ? 0 : 21
         contentItem: Item {
             RowLayout {
                 visible: !window.compactRail
                 anchors.fill: parent
                 spacing: 12
-                Image { Layout.preferredWidth: 21; Layout.preferredHeight: 21; source: control.iconSource }
-                Label { Layout.fillWidth: true; text: control.text; color: control.selected ? Theme.secondaryContainerText : Theme.textSecondary; font.pixelSize: 15; font.weight: control.selected ? Font.DemiBold : Font.Normal }
+                Image { Layout.preferredWidth: 24; Layout.preferredHeight: 24; source: control.iconSource }
+                Label { Layout.fillWidth: true; text: control.text; color: control.selected ? Theme.secondaryContainerText : Theme.textSecondary; font.pixelSize: 17; font.weight: control.selected ? Font.DemiBold : Font.Normal }
             }
             ColumnLayout {
                 visible: window.compactRail
@@ -417,7 +426,7 @@ ApplicationWindow {
                 Label { Layout.alignment: Qt.AlignHCenter; text: control.text; color: control.selected ? Theme.secondaryContainerText : Theme.textSecondary; font.pixelSize: 9 }
             }
         }
-        background: Rectangle { radius: window.compactRail ? 18 : 32; color: control.selected ? Theme.secondaryContainer : (control.hovered ? Theme.surfaceHover : "transparent"); border.width: control.activeFocus ? 2 : 0; border.color: Theme.accent }
+        background: Rectangle { radius: window.compactRail ? 18 : 34; color: control.selected ? Theme.secondaryContainer : (control.hovered ? Theme.surfaceHover : "transparent") }
         AppToolTip { visible: window.compactRail && control.hovered; text: control.text }
     }
 

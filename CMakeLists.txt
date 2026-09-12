@@ -107,6 +107,7 @@ qt_add_qml_module(isora
         qml/assets/icons/gear.svg
         qml/assets/icons/memory.svg
         qml/assets/icons/terminal.svg
+        qml/assets/icons/sidebar-collapse.svg
 )
 
 target_compile_definitions(isora PRIVATE
