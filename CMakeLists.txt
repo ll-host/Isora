@@ -87,7 +87,7 @@ qt_add_qml_module(isora
         qml/pages/StoragePage.qml
     RESOURCES
         qml/assets/icons/activity.svg
-        qml/assets/icons/app.svg
+        qml/assets/icons/app.png
         qml/assets/icons/backup.svg
         qml/assets/icons/disc.svg
         qml/assets/icons/database.svg
@@ -140,9 +140,9 @@ if(NOT WIN32)
     install(FILES packaging/io.github.ll_host.Isora.desktop
             DESTINATION share/applications
             RENAME io.github.ll_host.Isora.desktop)
-    install(FILES packaging/io.github.ll_host.Isora.svg
-            DESTINATION share/icons/hicolor/scalable/apps
-            RENAME io.github.ll_host.Isora.svg)
+    install(FILES packaging/io.github.ll_host.Isora.png
+            DESTINATION share/icons/hicolor/512x512/apps
+            RENAME io.github.ll_host.Isora.png)
 endif()
 
 if(WIN32)

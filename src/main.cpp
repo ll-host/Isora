@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationDomain(QStringLiteral("github.com/ll-host"));
     QCoreApplication::setApplicationName(QStringLiteral("Isora"));
     QGuiApplication::setApplicationDisplayName(QStringLiteral("Isora"));
-    QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/qt/qml/Isora/qml/assets/icons/app.svg")));
+    QGuiApplication::setWindowIcon(QIcon(QStringLiteral(":/qt/qml/Isora/qml/assets/icons/app.png")));
     QCoreApplication::setApplicationVersion(QStringLiteral(ISORA_VERSION));
     QQuickStyle::setStyle(QStringLiteral("Material"));
 

@@ -9,8 +9,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QImage>
-#include <QPainter>
-#include <QPainterPath>
 #include <QProcess>
 #include <QSaveFile>
 #include <QSettings>
@@ -184,25 +182,11 @@ HICON isoraIcon()
 {
     static HICON icon = [] {
         constexpr int size = 32;
-        QImage image(size, size, QImage::Format_ARGB32_Premultiplied);
-        image.fill(Qt::transparent);
-        QPainter painter(&image);
-        painter.setRenderHint(QPainter::Antialiasing);
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(QColor(QStringLiteral("#111A26")));
-        painter.drawRoundedRect(QRectF(1, 1, 30, 30), 7, 7);
-        painter.setPen(QPen(QColor(QStringLiteral("#4B8BE6")), 2));
-        painter.setBrush(QColor(QStringLiteral("#172231")));
-        painter.drawRoundedRect(QRectF(7, 8, 19, 15), 3, 3);
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(QColor(QStringLiteral("#7CB3FF")));
-        QPainterPath play;
-        play.moveTo(14, 12);
-        play.lineTo(21, 16);
-        play.lineTo(14, 20);
-        play.closeSubpath();
-        painter.drawPath(play);
-        painter.end();
+        QImage image(QStringLiteral(":/qt/qml/Isora/qml/assets/icons/app.png"));
+        if (image.isNull())
+            return HICON(nullptr);
+        image = image.scaled(size, size, Qt::KeepAspectRatio, Qt::SmoothTransformation)
+                    .convertToFormat(QImage::Format_ARGB32_Premultiplied);
 
         BITMAPV5HEADER header{};
         header.bV5Size = sizeof(header);
