@@ -91,7 +91,7 @@ Item {
                     }
                     RowLayout {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 224
+                        Layout.preferredHeight: 238
                         spacing: 32
                         ColumnLayout {
                             Layout.fillWidth: true
@@ -103,17 +103,41 @@ Item {
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 3
-                            ResourceRow { title: "Память"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/activity.svg"; control: AppSpinBox { id: createMemory; from: 1024; to: 262144; stepSize: 1024; value: App.defaultMemoryMiB; textFromValue: function(v) { return root.memoryText(v) } } }
-                            ResourceRow { title: "Процессоры"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"; control: AppSpinBox { id: createCpu; from: 1; to: 256; value: App.defaultCpuCount } }
-                            ResourceRow { title: "Диск"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/drive.svg"; control: AppSpinBox { id: createDisk; from: 8; to: 2048; value: App.defaultDiskGiB; textFromValue: function(v) { return v + " ГиБ" } } }
+                            ResourceRow {
+                                title: "Память"
+                                iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/activity.svg"
+                                first: true
+                                AppSpinBox { id: createMemory; Layout.fillWidth: true; Layout.fillHeight: true; from: 1024; to: 262144; stepSize: 1024; value: App.defaultMemoryMiB; textFromValue: function(v) { return root.memoryText(v) } }
+                            }
+                            ResourceRow {
+                                title: "Процессоры"
+                                iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"
+                                AppSpinBox { id: createCpu; Layout.fillWidth: true; Layout.fillHeight: true; from: 1; to: 256; value: App.defaultCpuCount }
+                            }
+                            ResourceRow {
+                                title: "Диск"
+                                iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/drive.svg"
+                                last: true
+                                AppSpinBox { id: createDisk; Layout.fillWidth: true; Layout.fillHeight: true; from: 8; to: 2048; value: App.defaultDiskGiB; textFromValue: function(v) { return v + " ГиБ" } }
+                            }
                         }
                     }
                     Label { text: "Параметры"; color: Theme.text; font.pixelSize: 22; font.weight: Font.Bold }
                     ColumnLayout {
                         Layout.fillWidth: true
                         spacing: 3
-                        ToggleRow { title: "UEFI"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/activity.svg"; control: AppSwitch { id: createEfi; checked: App.defaultUseEfi } }
-                        ToggleRow { title: "3D-ускорение"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; control: AppSwitch { id: create3d; checked: App.defaultUse3d; enabled: App.intelRenderAvailable } }
+                        ToggleRow {
+                            title: "UEFI"
+                            iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/activity.svg"
+                            first: true
+                            AppSwitch { id: createEfi; Layout.fillWidth: true; Layout.fillHeight: true; checked: App.defaultUseEfi }
+                        }
+                        ToggleRow {
+                            title: "3D-ускорение"
+                            iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"
+                            last: true
+                            AppSwitch { id: create3d; Layout.fillWidth: true; Layout.fillHeight: true; checked: App.defaultUse3d; enabled: App.intelRenderAvailable }
+                        }
                     }
                     RowLayout {
                         Layout.fillWidth: true
@@ -376,19 +400,30 @@ Item {
         id: resourceRow
         property string title: ""
         property url iconSource
-        property Item control
+        property bool first: false
+        property bool last: false
+        default property alias controlContent: controlSlot.data
         Layout.fillWidth: true
-        Layout.preferredHeight: 72
-        radius: 8
+        Layout.preferredHeight: 76
+        topLeftRadius: first ? 28 : 8
+        topRightRadius: first ? 28 : 8
+        bottomLeftRadius: last ? 28 : 8
+        bottomRightRadius: last ? 28 : 8
         color: Theme.surface
         RowLayout {
             anchors.fill: parent
             anchors.leftMargin: 16
             anchors.rightMargin: 12
             spacing: 14
-            Image { Layout.preferredWidth: 24; Layout.preferredHeight: 24; source: resourceRow.iconSource }
-            Label { Layout.fillWidth: true; text: resourceRow.title; color: Theme.text; font.pixelSize: 14 }
-            Item { Layout.preferredWidth: resourceRow.control ? resourceRow.control.implicitWidth : 0; Layout.preferredHeight: 56; Component.onCompleted: if (resourceRow.control) resourceRow.control.parent = this }
+            Rectangle {
+                Layout.preferredWidth: 44
+                Layout.preferredHeight: 44
+                radius: 22
+                color: Theme.accentSubtle
+                Image { anchors.centerIn: parent; width: 23; height: 23; source: resourceRow.iconSource }
+            }
+            Label { Layout.fillWidth: true; text: resourceRow.title; color: Theme.text; font.pixelSize: 15 }
+            ColumnLayout { id: controlSlot; Layout.preferredWidth: 166; Layout.preferredHeight: 48 }
         }
     }
 
@@ -396,10 +431,15 @@ Item {
         id: toggleRow
         property string title: ""
         property url iconSource
-        property Item control
+        property bool first: false
+        property bool last: false
+        default property alias controlContent: controlSlot.data
         Layout.fillWidth: true
-        Layout.preferredHeight: 72
-        radius: 8
+        Layout.preferredHeight: 76
+        topLeftRadius: first ? 28 : 8
+        topRightRadius: first ? 28 : 8
+        bottomLeftRadius: last ? 28 : 8
+        bottomRightRadius: last ? 28 : 8
         color: Theme.surface
         RowLayout {
             anchors.fill: parent
@@ -408,7 +448,7 @@ Item {
             spacing: 14
             Image { Layout.preferredWidth: 24; Layout.preferredHeight: 24; source: toggleRow.iconSource }
             Label { Layout.fillWidth: true; text: toggleRow.title; color: Theme.text; font.pixelSize: 14 }
-            Item { Layout.preferredWidth: toggleRow.control ? toggleRow.control.implicitWidth : 0; Layout.preferredHeight: 56; Component.onCompleted: if (toggleRow.control) toggleRow.control.parent = this }
+            ColumnLayout { id: controlSlot; Layout.preferredWidth: 52; Layout.preferredHeight: 40 }
         }
     }
 
