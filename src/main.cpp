@@ -90,6 +90,8 @@ int main(int argc, char* argv[])
     else if (requestedPage == QStringLiteral("images") || requestedPage == QStringLiteral("storage"))
         root->setProperty("currentPage", 1);
     else if (requestedPage == QStringLiteral("settings"))
+        root->setProperty("currentPage", 3);
+    else if (requestedPage == QStringLiteral("diagnostics") || requestedPage == QStringLiteral("system"))
         root->setProperty("currentPage", 2);
     if (parser.isSet(QStringLiteral("dialog")))
         root->setProperty("testDialog", parser.value(QStringLiteral("dialog")));

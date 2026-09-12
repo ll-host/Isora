@@ -117,10 +117,16 @@ ApplicationWindow {
                     onClicked: window.currentPage = 1
                 }
                 RailButton {
-                    text: "Настройки"
-                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/gear.svg"
+                    text: "Система"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/shield.svg"
                     selected: window.currentPage === 2
                     onClicked: window.currentPage = 2
+                }
+                RailButton {
+                    text: "Настройки"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/gear.svg"
+                    selected: window.currentPage === 3
+                    onClicked: window.currentPage = 3
                 }
 
                 Item { Layout.fillHeight: true }
@@ -167,7 +173,7 @@ ApplicationWindow {
                         AppToolTip { visible: parent.hovered; text: "Новая машина" }
                     }
                     ToolButton {
-                        visible: window.currentPage !== 2 && !(window.currentPage === 0 && machinesPage.route === "overview")
+                        visible: window.currentPage !== 3 && !(window.currentPage === 0 && machinesPage.route === "overview")
                         enabled: !App.busy
                         onClicked: App.refresh()
                         contentItem: Image { anchors.centerIn: parent; width: 20; height: 20; source: "qrc:/qt/qml/Isora/qml/assets/icons/refresh.svg" }
@@ -280,36 +286,6 @@ ApplicationWindow {
                             }
                         }
 
-                        Rectangle {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 72
-                            radius: 20
-                            color: Theme.surface
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.leftMargin: 18
-                                anchors.rightMargin: 18
-                                spacing: 14
-                                Rectangle {
-                                    Layout.preferredWidth: 40
-                                    Layout.preferredHeight: 40
-                                    radius: 20
-                                    color: Theme.accentSubtle
-                                    Image {
-                                        anchors.centerIn: parent
-                                        width: 24
-                                        height: 24
-                                        source: "qrc:/qt/qml/Isora/qml/assets/icons/shield.svg"
-                                    }
-                                }
-                                ColumnLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 2
-                                    Label { text: "Система"; color: Theme.text; font.pixelSize: 16; font.weight: Font.Medium }
-                                    Label { text: App.systemReady ? "KVM доступен" : "Требуется проверка"; color: Theme.textSecondary; font.pixelSize: 12 }
-                                }
-                            }
-                        }
                     }
                 }
 
@@ -342,6 +318,7 @@ ApplicationWindow {
                             machinesPage.openBackups()
                         }
                     }
+                    DiagnosticsPage { compact: true }
                     SettingsPage { compact: true }
                 }
             }
@@ -508,6 +485,8 @@ ApplicationWindow {
         if (currentPage === 1)
             return "Хранилище"
         if (currentPage === 2)
+            return "Система"
+        if (currentPage === 3)
             return "Настройки"
         if (machinesPage.route === "create")
             return "Новая машина"
