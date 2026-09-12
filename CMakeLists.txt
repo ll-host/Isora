@@ -109,6 +109,8 @@ qt_add_qml_module(isora
         qml/assets/icons/terminal.svg
         qml/assets/icons/sidebar-collapse.svg
         qml/assets/icons/cloud-upload.svg
+        qml/assets/icons/play-on-accent.svg
+        qml/assets/icons/power-on-accent.svg
 )
 
 target_compile_definitions(isora PRIVATE

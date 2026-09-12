@@ -20,7 +20,7 @@ Item {
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 56
+            Layout.preferredHeight: 60
             spacing: 16
             Label {
                 Layout.fillWidth: true
@@ -31,21 +31,23 @@ Item {
                 elide: Text.ElideRight
             }
             RowLayout {
-                spacing: 3
-                ActionButton {
-                    Layout.preferredWidth: 166
-                    Layout.preferredHeight: 56
+                spacing: 4
+                HeaderActionButton {
+                    Layout.preferredWidth: 156
                     text: "Консоль"
                     iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/terminal.svg"
+                    first: true
                     enabled: root.machine && root.machine.running && !App.busy
                     onClicked: App.openConsole(root.machine.id)
                 }
-                ActionButton {
-                    Layout.preferredWidth: 136
-                    Layout.preferredHeight: 56
+                HeaderActionButton {
+                    Layout.preferredWidth: 148
                     text: root.machine && root.machine.running ? "Выключить" : "Запустить"
-                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/play.svg"
+                    iconSource: root.machine && root.machine.running
+                        ? "qrc:/qt/qml/Isora/qml/assets/icons/power-on-accent.svg"
+                        : "qrc:/qt/qml/Isora/qml/assets/icons/play-on-accent.svg"
                     accent: true
+                    last: true
                     enabled: root.machine && !App.busy
                     onClicked: root.machine.running ? App.shutdownMachine(root.machine.id) : App.startMachine(root.machine.id)
                 }
@@ -136,6 +138,42 @@ Item {
             spacing: 3
             Label { Layout.alignment: Qt.AlignHCenter; text: metric.value; color: Theme.text; font.pixelSize: 18; font.weight: Font.DemiBold }
             Label { Layout.alignment: Qt.AlignHCenter; text: metric.label; color: Theme.textSecondary; font.pixelSize: 11 }
+        }
+    }
+
+    component HeaderActionButton: Button {
+        id: headerAction
+        property url iconSource
+        property bool accent: false
+        property bool first: false
+        property bool last: false
+        implicitHeight: 60
+        leftInset: 0
+        rightInset: 0
+        topInset: 0
+        bottomInset: 0
+        leftPadding: 20
+        rightPadding: 20
+        contentItem: RowLayout {
+            spacing: 10
+            Item { Layout.fillWidth: true }
+            Image { Layout.preferredWidth: 22; Layout.preferredHeight: 22; source: headerAction.iconSource }
+            Label {
+                text: headerAction.text
+                color: headerAction.accent ? Theme.accentText : Theme.secondaryContainerText
+                font.pixelSize: 17
+                font.weight: Font.Normal
+            }
+            Item { Layout.fillWidth: true }
+        }
+        background: Rectangle {
+            topLeftRadius: headerAction.first ? 30 : 4
+            bottomLeftRadius: headerAction.first ? 30 : 4
+            topRightRadius: headerAction.last ? 30 : 4
+            bottomRightRadius: headerAction.last ? 30 : 4
+            color: headerAction.accent
+                ? (headerAction.down ? Theme.accentHover : Theme.accent)
+                : (headerAction.down ? Theme.surfaceHover : Theme.secondaryContainer)
         }
     }
 
