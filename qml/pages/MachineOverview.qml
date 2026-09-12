@@ -147,6 +147,10 @@ Item {
         property bool last: false
         Layout.fillWidth: true
         implicitHeight: 72
+        leftInset: 0
+        rightInset: 0
+        topInset: 0
+        bottomInset: 0
         leftPadding: 18
         rightPadding: 22
         contentItem: RowLayout {
