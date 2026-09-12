@@ -79,12 +79,12 @@ ApplicationWindow {
 
                 Item {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: window.compactRail ? 70 : 99
+                    Layout.preferredHeight: 70
                     ToolButton {
                         anchors.left: parent.left
                         anchors.leftMargin: window.compactRail ? 20 : 13
                         anchors.top: parent.top
-                        anchors.topMargin: window.compactRail ? 15 : 46
+                        anchors.topMargin: 15
                         width: 40
                         height: 40
                         onClicked: window.railExpanded = !window.railExpanded
