@@ -436,6 +436,10 @@ ApplicationWindow {
         height: 72
         leftPadding: 16
         rightPadding: 16
+        leftInset: 0
+        rightInset: 0
+        topInset: 0
+        bottomInset: 0
         onClicked: {
             window.selectedMachineId = modelData.id
             machinesPage.showOverview()
@@ -460,14 +464,14 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 spacing: 3
                 Label { Layout.fillWidth: true; text: machineControl.modelData.name; color: Theme.text; elide: Text.ElideRight; font.pixelSize: 16; font.weight: Font.Medium }
-                Label { Layout.fillWidth: true; text: window.machineResourcesSummary(machineControl.modelData); color: Theme.textSecondary; elide: Text.ElideRight; font.pixelSize: 12 }
+                Label { Layout.fillWidth: true; text: window.machineResourcesSummary(machineControl.modelData); color: Theme.textSecondary; elide: Text.ElideRight; font.pixelSize: 13 }
             }
         }
         background: Rectangle {
             topLeftRadius: machineControl.index === 0 ? 28 : 8
             topRightRadius: machineControl.index === 0 ? 28 : 8
-            bottomLeftRadius: machineControl.index === ListView.view.count - 1 ? 28 : 8
-            bottomRightRadius: machineControl.index === ListView.view.count - 1 ? 28 : 8
+            bottomLeftRadius: machineControl.index === window.filteredMachines.length - 1 ? 28 : 8
+            bottomRightRadius: machineControl.index === window.filteredMachines.length - 1 ? 28 : 8
             color: window.selectedMachineId === machineControl.modelData.id ? Theme.accentSubtle : (machineControl.hovered ? Theme.surfaceHover : Theme.surface)
         }
     }
