@@ -135,14 +135,8 @@ ApplicationWindow {
 
             Rectangle {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 70
-                color: Theme.surface
-                Rectangle {
-                    anchors.bottom: parent.bottom
-                    width: parent.width
-                    height: 1
-                    color: Theme.border
-                }
+                Layout.preferredHeight: 60
+                color: Theme.sidebar
                 RowLayout {
                     anchors.fill: parent
                     anchors.leftMargin: 64
@@ -159,8 +153,8 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         text: window.pageTitle()
                         color: Theme.text
-                        font.pixelSize: 24
-                        font.weight: Font.DemiBold
+                        font.pixelSize: 28
+                        font.weight: Font.Normal
                         elide: Text.ElideRight
                     }
                     ToolButton {
