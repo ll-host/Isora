@@ -11,6 +11,7 @@ Item {
     property var pendingRemovalImage: null
     property string testDialogName: ""
     property bool wideLayout: width >= 980
+    readonly property int isoListHeight: Math.max(102, App.images.length * 102 + Math.max(0, App.images.length - 1) * 4)
     signal openMachine(string machineId)
     signal openImport()
     signal openBackups()
@@ -116,7 +117,7 @@ Item {
 
             GridLayout {
                 Layout.fillWidth: true
-                Layout.preferredHeight: root.wideLayout ? 294 : Math.max(102, App.images.length * 102 + Math.max(0, App.images.length - 1) * 4) + 318
+                Layout.preferredHeight: root.wideLayout ? Math.max(294, root.isoListHeight) : root.isoListHeight + 318
                 columns: root.wideLayout ? 2 : 1
                 columnSpacing: 40
                 rowSpacing: 24
@@ -124,7 +125,7 @@ Item {
                 ListView {
                     id: isoList
                     Layout.fillWidth: true
-                    Layout.preferredHeight: root.wideLayout ? 294 : Math.max(102, App.images.length * 102 + Math.max(0, App.images.length - 1) * 4)
+                    Layout.preferredHeight: root.isoListHeight
                     model: App.images
                     spacing: 4
                     interactive: false
