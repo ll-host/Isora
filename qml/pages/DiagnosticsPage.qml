@@ -22,22 +22,6 @@ Item {
             PageHeader {
                 visible: !root.compact
                 title: "Состояние системы"
-                ActionButton {
-                    text: "Обновить"
-                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/refresh.svg"
-                    onClicked: App.refresh()
-                }
-            }
-
-            RowLayout {
-                visible: root.compact
-                Layout.fillWidth: true
-                Item { Layout.fillWidth: true }
-                ActionButton {
-                    text: "Обновить"
-                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/refresh.svg"
-                    onClicked: App.refresh()
-                }
             }
 
             GridLayout {
