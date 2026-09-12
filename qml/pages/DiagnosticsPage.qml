@@ -110,31 +110,6 @@ Item {
                 }
             }
 
-            Rectangle {
-                Layout.fillWidth: true
-                implicitHeight: 66
-                radius: 12
-                color: Theme.successSurface
-                border.color: Theme.successBorder
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 16
-                    spacing: 12
-                    Image {
-                        source: "qrc:/qt/qml/Isora/qml/assets/icons/shield.svg"
-                        sourceSize.width: 22
-                        sourceSize.height: 22
-                        Layout.preferredWidth: 22
-                        Layout.preferredHeight: 22
-                    }
-                    Label {
-                        Layout.fillWidth: true
-                        text: "Физические диски не подключаются к создаваемым машинам."
-                        color: Theme.textSecondary
-                        font.pixelSize: 13
-                    }
-                }
-            }
         }
     }
 }
