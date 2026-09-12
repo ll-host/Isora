@@ -8,16 +8,16 @@ Item {
     id: root
     property var machine: null
     readonly property real heightSurplus: Math.max(0, height - 800)
-    readonly property real adaptiveGap: Math.min(28, heightSurplus * 0.075)
     signal openSettings()
     signal openSnapshots()
     signal openBackups()
 
     ColumnLayout {
+        id: overviewContent
         visible: root.machine !== null
-        width: Math.max(0, Math.min(1120, parent.width - 48))
-        x: 24
-        y: 40 + Math.min(16, root.heightSurplus * 0.03)
+        width: Math.max(0, Math.min(980, parent.width - 64))
+        x: (parent.width - width) / 2
+        y: Math.max(32, (parent.height - implicitHeight) * 0.42)
         spacing: 0
 
         RowLayout {
@@ -94,17 +94,10 @@ Item {
             }
         }
 
-        Rectangle {
-            Layout.topMargin: 40 + Math.min(20, root.adaptiveGap)
-            Layout.fillWidth: true
-            Layout.preferredHeight: 1
-            color: Theme.border
-        }
-
         RowLayout {
-            Layout.topMargin: 28 + Math.min(12, root.adaptiveGap * 0.5)
+            Layout.topMargin: 32
             Layout.fillWidth: true
-            Layout.preferredHeight: 104 + Math.min(20, root.heightSurplus * 0.04)
+            Layout.preferredHeight: 88
             spacing: 4
             MetricButton { value: root.machine ? root.memoryText(root.machine.memoryMiB) : "—"; label: "Память"; first: true }
             MetricButton { value: root.machine ? String(root.machine.cpuCount) : "—"; label: "CPU" }
@@ -113,7 +106,7 @@ Item {
         }
 
         Label {
-            Layout.topMargin: 51 + root.adaptiveGap
+            Layout.topMargin: 36
             text: "Управление"
             color: Theme.text
             font.pixelSize: 22
@@ -159,8 +152,8 @@ Item {
         ColumnLayout {
             anchors.centerIn: parent
             spacing: 3
-            Label { Layout.alignment: Qt.AlignHCenter; text: metric.value; color: Theme.text; font.pixelSize: 18; font.weight: Font.DemiBold }
-            Label { Layout.alignment: Qt.AlignHCenter; text: metric.label; color: Theme.textSecondary; font.pixelSize: 11 }
+            Label { Layout.alignment: Qt.AlignHCenter; text: metric.value; color: Theme.text; font.pixelSize: 17; font.weight: Font.DemiBold }
+            Label { Layout.alignment: Qt.AlignHCenter; text: metric.label; color: Theme.textSecondary; font.pixelSize: 10 }
         }
     }
 
