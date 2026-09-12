@@ -7,15 +7,17 @@ import "../components"
 Item {
     id: root
     property var machine: null
+    readonly property real heightSurplus: Math.max(0, height - 800)
+    readonly property real adaptiveGap: Math.min(28, heightSurplus * 0.075)
     signal openSettings()
     signal openSnapshots()
     signal openBackups()
 
     ColumnLayout {
         visible: root.machine !== null
-        width: Math.min(632, parent.width - 40)
+        width: Math.max(0, Math.min(1120, parent.width - 48))
         x: 24
-        y: 40
+        y: 40 + Math.min(16, root.heightSurplus * 0.03)
         spacing: 0
 
         RowLayout {
@@ -93,17 +95,16 @@ Item {
         }
 
         Rectangle {
-            Layout.topMargin: 40
+            Layout.topMargin: 40 + Math.min(20, root.adaptiveGap)
             Layout.fillWidth: true
             Layout.preferredHeight: 1
             color: Theme.border
         }
 
         RowLayout {
-            Layout.topMargin: 28
-            Layout.preferredWidth: Math.min(674, parent.width)
-            Layout.alignment: Qt.AlignLeft
-            Layout.preferredHeight: 104
+            Layout.topMargin: 28 + Math.min(12, root.adaptiveGap * 0.5)
+            Layout.fillWidth: true
+            Layout.preferredHeight: 104 + Math.min(20, root.heightSurplus * 0.04)
             spacing: 4
             MetricButton { value: root.machine ? root.memoryText(root.machine.memoryMiB) : "—"; label: "Память"; first: true }
             MetricButton { value: root.machine ? String(root.machine.cpuCount) : "—"; label: "CPU" }
@@ -112,7 +113,7 @@ Item {
         }
 
         Label {
-            Layout.topMargin: 51
+            Layout.topMargin: 51 + root.adaptiveGap
             text: "Управление"
             color: Theme.text
             font.pixelSize: 22
@@ -216,7 +217,7 @@ Item {
         property bool first: false
         property bool last: false
         Layout.fillWidth: true
-        implicitHeight: 72
+        implicitHeight: 72 + Math.min(12, root.heightSurplus * 0.03)
         leftInset: 0
         rightInset: 0
         topInset: 0

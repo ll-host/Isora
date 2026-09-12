@@ -169,19 +169,22 @@ capture_ui_preview() {
         return 1
     }
 
-    for name in machines machines-compact create machine-settings images system settings; do
+    for name in machines machines-compact machines-wide create machine-settings images system settings; do
         width=1280
         height=800
         if [[ "$name" == 'machines-compact' ]]; then
             width=1024
             height=680
+        elif [[ "$name" == 'machines-wide' ]]; then
+            width=1600
+            height=1200
         fi
         command=("${PROJECT_ROOT}/build/isora" --width "$width" --height "$height" --screenshot "${preview_dir}/${name}.png")
         case "$name" in
             create|machine-settings) command+=(--dialog "$name") ;;
             images|settings) command+=(--page "$name") ;;
             system) command+=(--page diagnostics) ;;
-            machines|machines-compact) command+=(--page machines) ;;
+            machines|machines-compact|machines-wide) command+=(--page machines) ;;
         esac
         if ! XDG_CONFIG_HOME="$config_dir" QT_QPA_PLATFORM=offscreen QSG_RHI_BACKEND=software "${command[@]}"; then
             rm -rf -- "$config_dir"
