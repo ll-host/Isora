@@ -57,16 +57,16 @@ Item {
         Rectangle {
             Layout.topMargin: 4
             Layout.alignment: Qt.AlignLeft
-            implicitWidth: stateLabel.implicitWidth + 24
-            implicitHeight: 32
-            radius: 8
+            implicitWidth: stateLabel.implicitWidth + 32
+            implicitHeight: 40
+            radius: 20
             color: Theme.surface
             Label {
                 id: stateLabel
                 anchors.centerIn: parent
                 text: root.machine && root.machine.running ? "▶  Работает" : "⏻  Выключена"
                 color: Theme.textSecondary
-                font.pixelSize: 12
+                font.pixelSize: 16
             }
         }
 
