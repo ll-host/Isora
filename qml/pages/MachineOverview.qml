@@ -68,16 +68,27 @@ Item {
         Rectangle {
             Layout.topMargin: 4
             Layout.alignment: Qt.AlignLeft
-            implicitWidth: stateLabel.implicitWidth + 32
+            implicitWidth: stateContent.implicitWidth + 32
             implicitHeight: 40
             radius: 20
             color: Theme.surface
-            Label {
-                id: stateLabel
+            RowLayout {
+                id: stateContent
                 anchors.centerIn: parent
-                text: root.machine && root.machine.running ? "▶  Работает" : "⏻  Выключена"
-                color: Theme.textSecondary
-                font.pixelSize: 16
+                spacing: 8
+                Image {
+                    Layout.preferredWidth: 18
+                    Layout.preferredHeight: 18
+                    source: root.machine && root.machine.running
+                        ? "qrc:/qt/qml/Isora/qml/assets/icons/play.svg"
+                        : "qrc:/qt/qml/Isora/qml/assets/icons/power.svg"
+                }
+                Label {
+                    text: root.machine && root.machine.running ? "Работает" : "Выключена"
+                    color: Theme.textSecondary
+                    font.pixelSize: 16
+                    verticalAlignment: Text.AlignVCenter
+                }
             }
         }
 
