@@ -877,12 +877,6 @@ bool LibvirtManager::openDisplay(const QString& id, QString* error) const
     return true;
 }
 
-bool LibvirtManager::openConsole(const QString&, QString* error) const
-{
-    *error = QStringLiteral("Отдельная serial-консоль Windows появится в следующей alpha; сейчас используйте окно QEMU");
-    return false;
-}
-
 QVariantList LibvirtManager::snapshots(const QString&, QString* error) const
 {
     error->clear();

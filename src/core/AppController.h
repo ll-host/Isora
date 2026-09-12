@@ -90,7 +90,6 @@ class AppController final : public QObject
     Q_INVOKABLE void forceStopMachine(const QString& id);
     Q_INVOKABLE void deleteMachine(const QString& id, bool removeDisk);
     Q_INVOKABLE void openDisplay(const QString& id);
-    Q_INVOKABLE void openConsole(const QString& id);
     Q_INVOKABLE void loadSnapshots(const QString& id);
     Q_INVOKABLE void createSnapshot(const QString& id, const QString& name);
     Q_INVOKABLE void revertSnapshot(const QString& id, const QString& name);

@@ -714,20 +714,6 @@ void AppController::updateMachineConfiguration(const QString& id, int memoryMiB,
                  });
 }
 
-void AppController::openConsole(const QString& id)
-{
-    runOperation(
-        QStringLiteral("Открытие консоли"), QStringLiteral("Консоль открыта"),
-        [id] {
-            QString error;
-            LibvirtManager worker;
-            if (!worker.connect(&error) || !worker.openConsole(id, &error))
-                return error;
-            return QString();
-        },
-        {}, false);
-}
-
 void AppController::loadSnapshots(const QString& id)
 {
     const int generation = ++m_snapshotGeneration;

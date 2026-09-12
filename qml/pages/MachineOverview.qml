@@ -33,23 +33,34 @@ Item {
             RowLayout {
                 spacing: 4
                 HeaderActionButton {
+                    visible: root.machine && root.machine.running
                     Layout.preferredWidth: 156
-                    text: "Консоль"
-                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/terminal.svg"
+                    text: "Завершить"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/power.svg"
                     first: true
-                    enabled: root.machine && root.machine.running && !App.busy
-                    onClicked: App.openConsole(root.machine.id)
+                    enabled: root.machine && !App.busy
+                    onClicked: App.shutdownMachine(root.machine.id)
                 }
                 HeaderActionButton {
-                    Layout.preferredWidth: 148
-                    text: root.machine && root.machine.running ? "Выключить" : "Запустить"
-                    iconSource: root.machine && root.machine.running
-                        ? "qrc:/qt/qml/Isora/qml/assets/icons/power-on-accent.svg"
-                        : "qrc:/qt/qml/Isora/qml/assets/icons/play-on-accent.svg"
-                    accent: true
+                    visible: root.machine && root.machine.running
+                    Layout.preferredWidth: 120
+                    text: "Убить"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/stop-on-danger.svg"
+                    danger: true
                     last: true
                     enabled: root.machine && !App.busy
-                    onClicked: root.machine.running ? App.shutdownMachine(root.machine.id) : App.startMachine(root.machine.id)
+                    onClicked: App.forceStopMachine(root.machine.id)
+                }
+                HeaderActionButton {
+                    visible: root.machine && !root.machine.running
+                    Layout.preferredWidth: 148
+                    text: "Запустить"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/play-on-accent.svg"
+                    accent: true
+                    first: true
+                    last: true
+                    enabled: root.machine && !App.busy
+                    onClicked: App.startMachine(root.machine.id)
                 }
             }
         }
@@ -145,6 +156,7 @@ Item {
         id: headerAction
         property url iconSource
         property bool accent: false
+        property bool danger: false
         property bool first: false
         property bool last: false
         implicitHeight: 60
@@ -160,7 +172,7 @@ Item {
             Image { Layout.preferredWidth: 22; Layout.preferredHeight: 22; source: headerAction.iconSource }
             Label {
                 text: headerAction.text
-                color: headerAction.accent ? Theme.accentText : Theme.secondaryContainerText
+                color: headerAction.danger ? Theme.dangerText : (headerAction.accent ? Theme.accentText : Theme.secondaryContainerText)
                 font.pixelSize: 17
                 font.weight: Font.Normal
             }
@@ -171,9 +183,11 @@ Item {
             bottomLeftRadius: headerAction.first ? 30 : 4
             topRightRadius: headerAction.last ? 30 : 4
             bottomRightRadius: headerAction.last ? 30 : 4
-            color: headerAction.accent
-                ? (headerAction.down ? Theme.accentHover : Theme.accent)
-                : (headerAction.down ? Theme.surfaceHover : Theme.secondaryContainer)
+            color: headerAction.danger
+                ? (headerAction.down ? Theme.dangerHover : Theme.dangerSurface)
+                : headerAction.accent
+                    ? (headerAction.down ? Theme.accentHover : Theme.accent)
+                    : (headerAction.down ? Theme.surfaceHover : Theme.secondaryContainer)
         }
     }
 

@@ -42,7 +42,6 @@ class LibvirtManager final : public QObject
     bool forceStop(const QString& id, QString* error);
     bool removeMachine(const QString& id, bool removeDisk, QString* error);
     bool openDisplay(const QString& id, QString* error) const;
-    bool openConsole(const QString& id, QString* error) const;
     QVariantList snapshots(const QString& id, QString* error) const;
     bool createSnapshot(const QString& id, const QString& name, QString* error);
     bool revertSnapshot(const QString& id, const QString& name, QString* error);

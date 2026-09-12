@@ -1471,45 +1471,6 @@ bool LibvirtManager::openDisplay(const QString& id, QString* error) const
     return true;
 }
 
-bool LibvirtManager::openConsole(const QString& id, QString* error) const
-{
-    DomainHandle item(domain(id, error));
-    if (!item.value)
-        return false;
-    if (virDomainIsActive(item) != 1) {
-        *error = QStringLiteral("Сначала запустите виртуальную машину");
-        return false;
-    }
-
-    const QStringList consoleCommand{QStringLiteral("virsh"), QStringLiteral("--connect"), connectionUri(),
-                                     QStringLiteral("console"), id};
-    struct Terminal
-    {
-        QString executable;
-        QStringList prefix;
-    };
-    const QList<Terminal> terminals{
-        {QStringLiteral("kitty"), {QStringLiteral("--title"), QStringLiteral("Isora — консоль")}},
-        {QStringLiteral("foot"), {QStringLiteral("--title=Isora — консоль")}},
-        {QStringLiteral("alacritty"),
-         {QStringLiteral("--title"), QStringLiteral("Isora — консоль"), QStringLiteral("-e")}},
-        {QStringLiteral("konsole"),
-         {QStringLiteral("-p"), QStringLiteral("tabtitle=Isora — консоль"), QStringLiteral("-e")}},
-        {QStringLiteral("gnome-terminal"), {QStringLiteral("--title=Isora — консоль"), QStringLiteral("--")}},
-        {QStringLiteral("xterm"),
-         {QStringLiteral("-T"), QStringLiteral("Isora — консоль"), QStringLiteral("-e")}}};
-    for (const Terminal& terminal : terminals) {
-        if (QStandardPaths::findExecutable(terminal.executable).isEmpty())
-            continue;
-        QStringList arguments = terminal.prefix;
-        arguments.append(consoleCommand);
-        if (QProcess::startDetached(terminal.executable, arguments))
-            return true;
-    }
-    *error = QStringLiteral("Не найден поддерживаемый терминал: установите kitty, foot, Alacritty, Konsole или xterm");
-    return false;
-}
-
 QVariantList LibvirtManager::snapshots(const QString& id, QString* error) const
 {
     QVariantList result;

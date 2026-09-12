@@ -26,7 +26,7 @@ void usage()
         << "  isoractl vm list [--json]\n"
         << "  isoractl vm create ИМЯ ID_ОБРАЗА [параметры]\n"
         << "  isoractl vm import ИМЯ ПУТЬ_QCOW2 [--memory МиБ --cpus ЧИСЛО]\n"
-        << "  isoractl vm start|open|console|reset|shutdown|stop|delete ID\n"
+        << "  isoractl vm start|open|reset|shutdown|stop|delete ID\n"
         << "  isoractl vm set ID --memory МиБ --cpus ЧИСЛО --disk ГБ\n"
         << "  isoractl vm graphics ID --display windowed|borderless|fullscreen --gpu ID [--3d] [--restart]\n"
         << "  isoractl snapshot list ID [--json]\n"
@@ -239,9 +239,6 @@ int main(int argc, char* argv[])
             } else if (action == QStringLiteral("open")) {
                 ok = libvirt.openDisplay(id, &error);
                 success = QStringLiteral("Экран открыт");
-            } else if (action == QStringLiteral("console")) {
-                ok = libvirt.openConsole(id, &error);
-                success = QStringLiteral("Консоль открыта");
             } else if (action == QStringLiteral("reset")) {
                 ok = libvirt.reset(id, &error);
                 success = QStringLiteral("Машина перезагружена");
