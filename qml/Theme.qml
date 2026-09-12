@@ -2,9 +2,9 @@ pragma Singleton
 import QtQuick
 
 QtObject {
-    readonly property color window: "#101411"
-    readonly property color sidebar: "#1C211E"
-    readonly property color surface: "#181C1A"
+    readonly property color window: "#171B18"
+    readonly property color sidebar: "#222623"
+    readonly property color surface: "#202522"
     readonly property color surfaceRaised: "#272B28"
     readonly property color surfaceHover: "#313633"
     readonly property color border: "#3E4941"

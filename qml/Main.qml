@@ -69,13 +69,6 @@ ApplicationWindow {
             Layout.fillHeight: true
             Layout.preferredWidth: window.railWidth
             color: Theme.sidebar
-            Rectangle {
-                anchors.right: parent.right
-                width: 1
-                height: parent.height
-                color: Theme.border
-            }
-
             ColumnLayout {
                 anchors.fill: parent
                 anchors.leftMargin: 0
