@@ -166,17 +166,18 @@ Item {
         bottomInset: 0
         leftPadding: 20
         rightPadding: 20
-        contentItem: RowLayout {
-            spacing: 10
-            Item { Layout.fillWidth: true }
-            Image { Layout.preferredWidth: 22; Layout.preferredHeight: 22; source: headerAction.iconSource }
-            Label {
-                text: headerAction.text
-                color: headerAction.danger ? Theme.dangerText : (headerAction.accent ? Theme.accentText : Theme.secondaryContainerText)
-                font.pixelSize: 17
-                font.weight: Font.Normal
+        contentItem: Item {
+            RowLayout {
+                anchors.centerIn: parent
+                spacing: 10
+                Image { Layout.preferredWidth: 22; Layout.preferredHeight: 22; source: headerAction.iconSource }
+                Label {
+                    text: headerAction.text
+                    color: headerAction.danger ? Theme.dangerText : (headerAction.accent ? Theme.accentText : Theme.secondaryContainerText)
+                    font.pixelSize: 17
+                    font.weight: Font.Normal
+                }
             }
-            Item { Layout.fillWidth: true }
         }
         background: Rectangle {
             topLeftRadius: headerAction.first ? 30 : 4
