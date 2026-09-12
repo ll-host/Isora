@@ -90,6 +90,7 @@ qt_add_qml_module(isora
         qml/assets/icons/app.svg
         qml/assets/icons/backup.svg
         qml/assets/icons/disc.svg
+        qml/assets/icons/database.svg
         qml/assets/icons/drive.svg
         qml/assets/icons/monitor.svg
         qml/assets/icons/more.svg
@@ -103,6 +104,9 @@ qt_add_qml_module(isora
         qml/assets/icons/sun.svg
         qml/assets/icons/trash.svg
         qml/assets/icons/moon.svg
+        qml/assets/icons/gear.svg
+        qml/assets/icons/memory.svg
+        qml/assets/icons/terminal.svg
 )
 
 target_compile_definitions(isora PRIVATE

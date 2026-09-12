@@ -13,20 +13,20 @@ Item {
 
     ColumnLayout {
         visible: root.machine !== null
-        width: Math.min(714, parent.width - 48)
+        width: Math.min(632, parent.width - 40)
         x: 24
-        y: 46
+        y: 40
         spacing: 0
 
         RowLayout {
             Layout.fillWidth: true
-            Layout.preferredHeight: 64
+            Layout.preferredHeight: 56
             spacing: 16
             Label {
                 Layout.fillWidth: true
                 text: root.machine ? root.machine.name : ""
                 color: Theme.text
-                font.pixelSize: 36
+                font.pixelSize: 32
                 font.weight: Font.Bold
                 elide: Text.ElideRight
             }
@@ -34,15 +34,15 @@ Item {
                 spacing: 3
                 ActionButton {
                     Layout.preferredWidth: 166
-                    Layout.preferredHeight: 64
+                    Layout.preferredHeight: 56
                     text: "Консоль"
-                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/terminal.svg"
                     enabled: root.machine && root.machine.running && !App.busy
                     onClicked: App.openConsole(root.machine.id)
                 }
                 ActionButton {
                     Layout.preferredWidth: 136
-                    Layout.preferredHeight: 64
+                    Layout.preferredHeight: 56
                     text: root.machine && root.machine.running ? "Выключить" : "Запустить"
                     iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/play.svg"
                     accent: true
@@ -52,15 +52,24 @@ Item {
             }
         }
 
-        StatusBadge {
+        Rectangle {
             Layout.topMargin: 4
             Layout.alignment: Qt.AlignLeft
-            text: root.machine && root.machine.running ? "●  Работает" : "⏻  Выключена"
-            good: root.machine && root.machine.running
+            implicitWidth: stateLabel.implicitWidth + 24
+            implicitHeight: 32
+            radius: 8
+            color: Theme.surface
+            Label {
+                id: stateLabel
+                anchors.centerIn: parent
+                text: root.machine && root.machine.running ? "▶  Работает" : "⏻  Выключена"
+                color: Theme.textSecondary
+                font.pixelSize: 12
+            }
         }
 
         Rectangle {
-            Layout.topMargin: 52
+            Layout.topMargin: 40
             Layout.fillWidth: true
             Layout.preferredHeight: 1
             color: Theme.border
@@ -70,7 +79,7 @@ Item {
             Layout.topMargin: 28
             Layout.preferredWidth: Math.min(674, parent.width)
             Layout.alignment: Qt.AlignLeft
-            Layout.preferredHeight: 120
+            Layout.preferredHeight: 104
             spacing: 4
             MetricButton { value: root.machine ? root.memoryText(root.machine.memoryMiB) : "—"; label: "Память"; first: true }
             MetricButton { value: root.machine ? String(root.machine.cpuCount) : "—"; label: "CPU" }
@@ -82,7 +91,7 @@ Item {
             Layout.topMargin: 51
             text: "Управление"
             color: Theme.text
-            font.pixelSize: 26
+            font.pixelSize: 22
             font.weight: Font.Bold
         }
 
@@ -90,13 +99,13 @@ Item {
             Layout.topMargin: 7
             Layout.fillWidth: true
             spacing: 4
-            ActionRow { title: "Оборудование"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"; first: true; onClicked: root.openSettings() }
+            ActionRow { title: "Оборудование"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/memory.svg"; first: true; onClicked: root.openSettings() }
             ActionRow { title: "Снимки"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"; onClicked: root.openSnapshots() }
             ActionRow {
-                title: root.machine && root.machine.running ? "Открыть экран" : "Загрузить ISO"
+                title: "Загрузить ISO"
                 iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/disc.svg"
                 last: true
-                onClicked: root.machine.running ? App.openDisplay(root.machine.id) : App.startMachineFromDisk(root.machine.id)
+                onClicked: App.startMachineFromDisk(root.machine.id)
             }
         }
     }
@@ -137,7 +146,7 @@ Item {
         property bool first: false
         property bool last: false
         Layout.fillWidth: true
-        implicitHeight: 82
+        implicitHeight: 72
         leftPadding: 18
         rightPadding: 22
         contentItem: RowLayout {

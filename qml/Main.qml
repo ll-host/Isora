@@ -26,9 +26,9 @@ ApplicationWindow {
     property string selectedMachineId: ""
     property bool railExpanded: width >= 1160
     readonly property bool compactRail: !railExpanded
-    readonly property int railWidth: railExpanded ? 238 : 96
+    readonly property int railWidth: railExpanded ? 220 : 96
     readonly property bool machinePanelVisible: currentPage === 0 && machinesPage.route === "overview"
-    readonly property int machinePanelWidth: width < 1240 ? 340 : 438
+    readonly property int machinePanelWidth: width < 1120 ? 320 : 378
     readonly property var selectedMachine: machineById(selectedMachineId)
     readonly property var filteredMachines: {
         const result = []
@@ -114,13 +114,13 @@ ApplicationWindow {
                 }
                 RailButton {
                     text: "Хранилище"
-                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/drive.svg"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/database.svg"
                     selected: window.currentPage === 1
                     onClicked: window.currentPage = 1
                 }
                 RailButton {
                     text: "Настройки"
-                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/gear.svg"
                     selected: window.currentPage === 2
                     onClicked: window.currentPage = 2
                 }
@@ -212,22 +212,22 @@ ApplicationWindow {
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: 32
-                        anchors.rightMargin: 17
-                        anchors.topMargin: 46
-                        anchors.bottomMargin: 98
+                        anchors.leftMargin: 22
+                        anchors.rightMargin: 13
+                        anchors.topMargin: 35
+                        anchors.bottomMargin: 76
                         spacing: 12
 
                         Rectangle {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 64
-                            radius: 32
-                            color: searchField.activeFocus ? Theme.surfaceRaised : Theme.surface
-                            border.width: searchField.activeFocus ? 2 : 1
-                            border.color: searchField.activeFocus ? Theme.accent : Theme.border
+                            Layout.preferredHeight: 56
+                            radius: 28
+                            color: Theme.surfaceRaised
+                            border.width: searchField.activeFocus ? 2 : 0
+                            border.color: Theme.accent
                             Image {
                                 anchors.left: parent.left
-                                anchors.leftMargin: 20
+                                anchors.leftMargin: 16
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: 18
                                 height: 18
@@ -236,7 +236,7 @@ ApplicationWindow {
                             TextInput {
                                 id: searchField
                                 anchors.left: parent.left
-                                anchors.leftMargin: 58
+                                anchors.leftMargin: 48
                                 anchors.right: clearSearch.visible ? clearSearch.left : parent.right
                                 anchors.rightMargin: clearSearch.visible ? 4 : 16
                                 anchors.verticalCenter: parent.verticalCenter
@@ -290,8 +290,8 @@ ApplicationWindow {
 
                         Rectangle {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 82
-                            radius: 22
+                            Layout.preferredHeight: 72
+                            radius: 20
                             color: Theme.surface
                             RowLayout {
                                 anchors.fill: parent
@@ -299,9 +299,9 @@ ApplicationWindow {
                                 anchors.rightMargin: 18
                                 spacing: 14
                                 Rectangle {
-                                    Layout.preferredWidth: 46
-                                    Layout.preferredHeight: 46
-                                    radius: 23
+                                    Layout.preferredWidth: 40
+                                    Layout.preferredHeight: 40
+                                    radius: 20
                                     color: Theme.accentSubtle
                                     Image {
                                         anchors.centerIn: parent
@@ -431,9 +431,10 @@ ApplicationWindow {
     component MachineDelegate: Button {
         id: machineControl
         required property var modelData
+        required property int index
         width: ListView.view.width
-        height: 82
-        leftPadding: 18
+        height: 72
+        leftPadding: 16
         rightPadding: 16
         onClicked: {
             window.selectedMachineId = modelData.id
@@ -442,16 +443,16 @@ ApplicationWindow {
         contentItem: RowLayout {
             spacing: 12
             Rectangle {
-                Layout.preferredWidth: 46
-                Layout.preferredHeight: 46
-                radius: 23
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 40
+                radius: 20
                 color: window.selectedMachineId === machineControl.modelData.id ? "transparent" : Theme.accentSubtle
                 Image {
                     anchors.centerIn: parent
                     width: 24
                     height: 24
-                    source: machineControl.modelData.running
-                        ? "qrc:/qt/qml/Isora/qml/assets/icons/activity.svg"
+                    source: machineControl.modelData.name.toLowerCase().indexOf("arch") >= 0
+                        ? "qrc:/qt/qml/Isora/qml/assets/icons/terminal.svg"
                         : "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"
                 }
             }
@@ -463,7 +464,10 @@ ApplicationWindow {
             }
         }
         background: Rectangle {
-            radius: 18
+            topLeftRadius: machineControl.index === 0 ? 28 : 8
+            topRightRadius: machineControl.index === 0 ? 28 : 8
+            bottomLeftRadius: machineControl.index === ListView.view.count - 1 ? 28 : 8
+            bottomRightRadius: machineControl.index === ListView.view.count - 1 ? 28 : 8
             color: window.selectedMachineId === machineControl.modelData.id ? Theme.accentSubtle : (machineControl.hovered ? Theme.surfaceHover : Theme.surface)
         }
     }
