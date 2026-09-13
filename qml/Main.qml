@@ -167,6 +167,8 @@ ApplicationWindow {
                     }
                     ToolButton {
                         visible: window.currentPage === 0 && machinesPage.route === "overview"
+                        Layout.preferredWidth: 40
+                        Layout.preferredHeight: 40
                         text: "+"
                         enabled: App.connected && !App.busy
                         onClicked: machinesPage.openCreateDialog()
