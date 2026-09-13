@@ -89,7 +89,9 @@ ApplicationWindow {
                         height: 40
                         onClicked: window.railExpanded = !window.railExpanded
                         contentItem: Image {
-                            source: "qrc:/qt/qml/Isora/qml/assets/icons/sidebar-collapse.svg"
+                            source: window.railExpanded
+                                ? "qrc:/qt/qml/Isora/qml/assets/icons/sidebar-collapse.svg"
+                                : "qrc:/qt/qml/Isora/qml/assets/icons/sidebar-expand.svg"
                             sourceSize.width: 24
                             sourceSize.height: 24
                             fillMode: Image.Pad
