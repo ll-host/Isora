@@ -120,9 +120,10 @@ Item {
             ActionRow { title: "Оборудование"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/memory.svg"; first: true; onClicked: root.openSettings() }
             ActionRow { title: "Снимки"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"; onClicked: root.openSnapshots() }
             ActionRow {
-                title: "Загрузить ISO"
-                iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/disc.svg"
+                title: "Запустить с диска"
+                iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/drive.svg"
                 last: true
+                enabled: root.machine && !root.machine.running && !App.busy
                 onClicked: App.startMachineFromDisk(root.machine.id)
             }
         }
