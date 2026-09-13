@@ -84,7 +84,7 @@ ApplicationWindow {
                         anchors.left: parent.left
                         anchors.leftMargin: window.compactRail ? 20 : 13
                         anchors.top: parent.top
-                        anchors.topMargin: 0
+                        anchors.topMargin: 10
                         width: 40
                         height: 40
                         onClicked: window.railExpanded = !window.railExpanded
