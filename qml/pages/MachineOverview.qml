@@ -62,7 +62,7 @@ Item {
                     first: true
                     last: true
                     enabled: root.machine && !App.busy
-                    onClicked: App.startMachine(root.machine.id)
+                    onClicked: App.startMachineFromIso(root.machine.id)
                 }
             }
         }

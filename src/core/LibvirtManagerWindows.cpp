@@ -776,6 +776,22 @@ bool LibvirtManager::start(const QString& id, QString* error)
     return true;
 }
 
+bool LibvirtManager::startFromIso(const QString& id, QString* error)
+{
+    QJsonObject object = readObject(machineConfigPath(id), error);
+    if (!error->isEmpty())
+        return false;
+    const QString isoPath = object.value(QStringLiteral("isoPath")).toString();
+    if (!QFileInfo(isoPath).isFile()) {
+        *error = QStringLiteral("К машине не подключён доступный ISO-образ");
+        return false;
+    }
+    object.insert(QStringLiteral("bootFromDisk"), false);
+    if (!writeObject(machineConfigPath(id), object, error))
+        return false;
+    return start(id, error);
+}
+
 bool LibvirtManager::startFromDisk(const QString& id, QString* error)
 {
     QJsonObject object = readObject(machineConfigPath(id), error);

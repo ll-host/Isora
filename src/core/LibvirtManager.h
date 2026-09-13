@@ -36,6 +36,7 @@ class LibvirtManager final : public QObject
     bool updateMachineGraphics(const QString& id, const QString& displayMode, const QString& gpuId, bool use3d,
                                QString* error);
     bool start(const QString& id, QString* error);
+    bool startFromIso(const QString& id, QString* error);
     bool startFromDisk(const QString& id, QString* error);
     bool reset(const QString& id, QString* error);
     bool shutdown(const QString& id, QString* error);

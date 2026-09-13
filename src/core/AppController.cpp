@@ -590,6 +590,21 @@ void AppController::startMachine(const QString& id)
     });
 }
 
+void AppController::startMachineFromIso(const QString& id)
+{
+    const bool openAfterStart = openDisplayAfterStart();
+    runOperation(QStringLiteral("Запуск с ISO-образа"), QStringLiteral("Машина запущена с ISO-образа"),
+                 [id, openAfterStart] {
+                     QString error;
+                     LibvirtManager worker;
+                     if (!worker.connect(&error) || !worker.startFromIso(id, &error))
+                         return error;
+                     if (openAfterStart)
+                         worker.openDisplay(id, &error);
+                     return error;
+                 });
+}
+
 void AppController::startMachineFromDisk(const QString& id)
 {
     const bool openAfterStart = openDisplayAfterStart();

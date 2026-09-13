@@ -84,6 +84,7 @@ class AppController final : public QObject
                                    int diskGiB, bool useEfi, bool use3d);
     Q_INVOKABLE void importExistingMachine(const QString& name, const QUrl& diskUrl, int memoryMiB, int cpuCount);
     Q_INVOKABLE void startMachine(const QString& id);
+    Q_INVOKABLE void startMachineFromIso(const QString& id);
     Q_INVOKABLE void startMachineFromDisk(const QString& id);
     Q_INVOKABLE void resetMachine(const QString& id);
     Q_INVOKABLE void shutdownMachine(const QString& id);

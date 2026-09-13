@@ -1290,6 +1290,76 @@ bool LibvirtManager::start(const QString& id, QString* error)
     return true;
 }
 
+bool LibvirtManager::startFromIso(const QString& id, QString* error)
+{
+    DomainHandle item(domain(id, error));
+    if (!item.value)
+        return false;
+    if (virDomainIsActive(item) == 1)
+        return true;
+
+    char* rawXml = virDomainGetXMLDesc(item, VIR_DOMAIN_XML_INACTIVE);
+    QDomDocument document;
+    const bool parsed = rawXml && document.setContent(QString::fromUtf8(rawXml));
+    free(rawXml);
+    if (!parsed) {
+        *error = QStringLiteral("Не удалось прочитать конфигурацию машины");
+        return false;
+    }
+
+    const QDomElement domainRoot = document.documentElement();
+    bool hasIso = false;
+    const QDomNodeList disks = domainRoot.elementsByTagName(QStringLiteral("disk"));
+    for (qsizetype index = 0; index < disks.size(); ++index) {
+        const QDomElement disk = disks.at(index).toElement();
+        if (disk.attribute(QStringLiteral("device")) != QStringLiteral("cdrom"))
+            continue;
+        const QString isoPath = disk.firstChildElement(QStringLiteral("source")).attribute(QStringLiteral("file"));
+        if (!isoPath.isEmpty() && QFileInfo::exists(isoPath)) {
+            hasIso = true;
+            break;
+        }
+    }
+    if (!hasIso) {
+        *error = QStringLiteral("К машине не подключён доступный ISO-образ");
+        return false;
+    }
+
+    QDomElement os = domainRoot.firstChildElement(QStringLiteral("os"));
+    if (os.isNull()) {
+        *error = QStringLiteral("В конфигурации машины отсутствует раздел загрузки");
+        return false;
+    }
+    for (QDomElement boot = os.firstChildElement(QStringLiteral("boot")); !boot.isNull();) {
+        const QDomElement next = boot.nextSiblingElement(QStringLiteral("boot"));
+        os.removeChild(boot);
+        boot = next;
+    }
+
+    QDomElement isoBoot = document.createElement(QStringLiteral("boot"));
+    isoBoot.setAttribute(QStringLiteral("dev"), QStringLiteral("cdrom"));
+    QDomElement diskBoot = document.createElement(QStringLiteral("boot"));
+    diskBoot.setAttribute(QStringLiteral("dev"), QStringLiteral("hd"));
+    const QDomElement bootMenu = os.firstChildElement(QStringLiteral("bootmenu"));
+    if (bootMenu.isNull()) {
+        os.appendChild(isoBoot);
+        os.appendChild(diskBoot);
+    } else {
+        os.insertBefore(isoBoot, bootMenu);
+        os.insertBefore(diskBoot, bootMenu);
+    }
+
+    const QString updatedXml = document.toString(-1);
+    if (!validateDomainXml(updatedXml, error))
+        return false;
+    DomainHandle updated(virDomainDefineXML(m_connection, updatedXml.toUtf8().constData()));
+    if (!updated.value) {
+        *error = QStringLiteral("Не удалось выбрать загрузку с ISO: %1").arg(lastError({}));
+        return false;
+    }
+    return start(id, error);
+}
+
 bool LibvirtManager::startFromDisk(const QString& id, QString* error)
 {
     DomainHandle item(domain(id, error));
