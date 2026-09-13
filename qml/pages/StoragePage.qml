@@ -10,8 +10,8 @@ Item {
     property var selectedMachine: null
     property var pendingRemovalImage: null
     property string testDialogName: ""
-    property bool wideLayout: width >= 980
-    readonly property int isoListHeight: Math.max(102, App.images.length * 102 + Math.max(0, App.images.length - 1) * 4)
+    readonly property int storageRowHeight: 78
+    readonly property int isoListHeight: Math.max(storageRowHeight, App.images.length * storageRowHeight + Math.max(0, App.images.length - 1) * 4)
     signal openMachine(string machineId)
     signal openImport()
     signal openBackups()
@@ -50,7 +50,7 @@ Item {
 
             ListView {
                 Layout.fillWidth: true
-                Layout.preferredHeight: App.machines.length > 0 ? App.machines.length * 102 + Math.max(0, App.machines.length - 1) * 4 : 102
+                Layout.preferredHeight: App.machines.length > 0 ? App.machines.length * root.storageRowHeight + Math.max(0, App.machines.length - 1) * 4 : root.storageRowHeight
                 model: App.machines
                 spacing: 4
                 interactive: false
@@ -115,91 +115,75 @@ Item {
                 }
             }
 
-            GridLayout {
+            ListView {
+                id: isoList
                 Layout.fillWidth: true
-                Layout.preferredHeight: root.wideLayout ? Math.max(294, root.isoListHeight) : root.isoListHeight + 318
-                columns: root.wideLayout ? 2 : 1
-                columnSpacing: 40
-                rowSpacing: 24
-
-                ListView {
-                    id: isoList
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: root.isoListHeight
-                    model: App.images
-                    spacing: 4
-                    interactive: false
-                    clip: true
-                    delegate: StorageRow {
-                        required property var modelData
-                        required property int index
-                        title: modelData.fileName || modelData.name
-                        detail: root.cleanSize(modelData.sizeText)
-                        iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/disc.svg"
-                        first: index === 0
-                        last: index === App.images.length - 1
-                        menuText: "Удалить"
-                        onTriggered: root.pendingRemovalImage = modelData
-                    }
-                    EmptyState {
-                        anchors.centerIn: parent
-                        visible: App.images.length === 0
-                        iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/disc.svg"
-                        title: "ISO пока не добавлены"
-                        description: ""
-                    }
+                Layout.preferredHeight: root.isoListHeight
+                model: App.images
+                spacing: 4
+                interactive: false
+                clip: true
+                delegate: StorageRow {
+                    required property var modelData
+                    required property int index
+                    title: modelData.fileName || modelData.name
+                    detail: root.cleanSize(modelData.sizeText)
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/disc.svg"
+                    first: index === 0
+                    last: index === App.images.length - 1
+                    menuText: "Удалить"
+                    onTriggered: root.pendingRemovalImage = modelData
                 }
+                EmptyState {
+                    anchors.centerIn: parent
+                    visible: App.images.length === 0
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/disc.svg"
+                    title: "ISO пока не добавлены"
+                    description: ""
+                }
+            }
 
-                ColumnLayout {
-                    id: backupColumn
-                    Layout.preferredWidth: root.wideLayout ? 336 : -1
-                    Layout.fillWidth: !root.wideLayout
-                    Layout.preferredHeight: 294
-                    Layout.alignment: Qt.AlignTop
-                    spacing: 4
+            SectionHeader {
+                Layout.topMargin: 44
+                title: "Резервные копии"
+                actionText: "Создать копию"
+                actionEnabled: root.selectedMachine !== null && !root.selectedMachine.running
+                onTriggered: root.openBackups()
+            }
 
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 78
+                radius: 24
+                color: Theme.surface
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 22
+                    anchors.rightMargin: 22
+                    spacing: 16
                     Rectangle {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 210
-                        topLeftRadius: 28
-                        topRightRadius: 28
-                        bottomLeftRadius: 8
-                        bottomRightRadius: 8
-                        color: Theme.surfaceHover
-                        ColumnLayout {
-                            anchors.fill: parent
-                            anchors.margins: 28
-                            spacing: 9
-                            Label { text: "Резервные копии"; color: Theme.text; font.pixelSize: 20; font.weight: Font.DemiBold }
-                            Label { text: root.backupSummary(); color: Theme.textSecondary; font.pixelSize: 16 }
-                            Item { Layout.fillHeight: true }
+                        Layout.preferredWidth: 44
+                        Layout.preferredHeight: 44
+                        radius: 22
+                        color: Theme.accentSubtle
+                        Image {
+                            anchors.centerIn: parent
+                            width: 22
+                            height: 22
+                            source: "qrc:/qt/qml/Isora/qml/assets/icons/cloud-upload.svg"
                         }
                     }
-
-                    Button {
+                    Label {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 80
-                        enabled: root.selectedMachine !== null && !root.selectedMachine.running && !App.busy
-                        onClicked: root.openBackups()
-                        leftInset: 0
-                        rightInset: 0
-                        topInset: 0
-                        bottomInset: 0
-                        contentItem: RowLayout {
-                            spacing: 12
-                            Item { Layout.fillWidth: true }
-                            Image { Layout.preferredWidth: 26; Layout.preferredHeight: 26; source: "qrc:/qt/qml/Isora/qml/assets/icons/cloud-upload.svg" }
-                            Label { text: "Создать копию"; color: Theme.secondaryContainerText; font.pixelSize: 19; font.weight: Font.Medium }
-                            Item { Layout.fillWidth: true }
-                        }
-                        background: Rectangle {
-                            topLeftRadius: 8
-                            topRightRadius: 8
-                            bottomLeftRadius: 28
-                            bottomRightRadius: 28
-                            color: parent.down ? Theme.surfaceHover : (parent.hovered ? Theme.secondaryContainer : "#46564B")
-                            opacity: parent.enabled ? 1 : 0.42
-                        }
+                        text: root.selectedMachine ? "Машина «" + root.selectedMachine.name + "»" : "Выберите машину"
+                        color: Theme.text
+                        font.pixelSize: 17
+                        elide: Text.ElideRight
+                    }
+                    Label {
+                        text: root.backupSummary()
+                        color: Theme.textSecondary
+                        font.pixelSize: 15
                     }
                 }
             }
@@ -211,6 +195,7 @@ Item {
         property string title
         property string actionText
         property bool accent: false
+        property bool actionEnabled: true
         signal triggered()
         Layout.fillWidth: true
         Layout.preferredHeight: 80
@@ -227,7 +212,7 @@ Item {
             text: section.actionText
             iconText: "+"
             accent: section.accent
-            enabled: !App.busy
+            enabled: section.actionEnabled && !App.busy
             font.pixelSize: 20
             font.weight: Font.Medium
             onClicked: section.triggered()
@@ -244,37 +229,37 @@ Item {
         property bool last: false
         signal triggered()
         width: ListView.view.width
-        height: 102
-        topLeftRadius: first ? 28 : 8
-        topRightRadius: first ? 28 : 8
-        bottomLeftRadius: last ? 28 : 8
-        bottomRightRadius: last ? 28 : 8
+        height: root.storageRowHeight
+        topLeftRadius: first ? 24 : 8
+        topRightRadius: first ? 24 : 8
+        bottomLeftRadius: last ? 24 : 8
+        bottomRightRadius: last ? 24 : 8
         color: Theme.surface
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 22
-            anchors.rightMargin: 18
-            spacing: 22
+            anchors.leftMargin: 18
+            anchors.rightMargin: 14
+            spacing: 16
             Rectangle {
-                Layout.preferredWidth: 56
-                Layout.preferredHeight: 56
-                radius: 28
+                Layout.preferredWidth: 44
+                Layout.preferredHeight: 44
+                radius: 22
                 color: Theme.accentSubtle
-                Image { anchors.centerIn: parent; width: 27; height: 27; source: row.iconSource }
+                Image { anchors.centerIn: parent; width: 22; height: 22; source: row.iconSource }
             }
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 4
-                Label { Layout.fillWidth: true; text: row.title; color: Theme.text; font.pixelSize: 20; font.weight: Font.Normal; elide: Text.ElideRight }
-                Label { Layout.fillWidth: true; text: row.detail; color: Theme.textSecondary; font.pixelSize: 16; elide: Text.ElideRight }
+                spacing: 2
+                Label { Layout.fillWidth: true; text: row.title; color: Theme.text; font.pixelSize: 17; font.weight: Font.Normal; elide: Text.ElideRight }
+                Label { Layout.fillWidth: true; text: row.detail; color: Theme.textSecondary; font.pixelSize: 14; elide: Text.ElideRight }
             }
             ToolButton {
-                Layout.preferredWidth: 48
-                Layout.preferredHeight: 48
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 40
                 onClicked: rowMenu.open()
                 contentItem: Image { source: "qrc:/qt/qml/Isora/qml/assets/icons/more.svg"; rotation: 90; fillMode: Image.Pad; sourceSize.width: 24; sourceSize.height: 24 }
-                background: Rectangle { radius: 24; color: parent.hovered ? Theme.surfaceHover : "transparent" }
+                background: Rectangle { radius: 20; color: parent.hovered ? Theme.surfaceHover : "transparent" }
                 Menu {
                     id: rowMenu
                     y: parent.height

@@ -177,7 +177,7 @@ ApplicationWindow {
                         AppToolTip { visible: parent.hovered; text: "Новая машина" }
                     }
                     ToolButton {
-                        visible: window.currentPage === 1 || window.currentPage === 2
+                        visible: window.currentPage === 2
                         enabled: !App.busy
                         onClicked: App.refresh()
                         contentItem: Image { anchors.centerIn: parent; width: 20; height: 20; source: "qrc:/qt/qml/Isora/qml/assets/icons/refresh.svg" }
