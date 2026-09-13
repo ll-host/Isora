@@ -69,9 +69,7 @@ Item {
                     ColumnLayout {
                         Layout.fillWidth: true
                         spacing: 3
-                        ToggleRow { title: "Открывать консоль после запуска"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; first: true; checked: autoOpenSwitch.checked; onClicked: autoOpenSwitch.checked = !autoOpenSwitch.checked }
-                        AppSwitch { id: autoOpenSwitch; visible: false; checked: App.openDisplayAfterStart; onToggled: root.dirty = true }
-                        ToggleRow { title: "3D-ускорение"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; checked: accelerationSwitch.checked; enabled: App.intelRenderAvailable; onClicked: accelerationSwitch.checked = !accelerationSwitch.checked }
+                        ToggleRow { title: "3D-ускорение"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; first: true; checked: accelerationSwitch.checked; enabled: App.intelRenderAvailable; onClicked: accelerationSwitch.checked = !accelerationSwitch.checked }
                         AppSwitch { id: accelerationSwitch; visible: false; checked: App.defaultUse3d; enabled: App.intelRenderAvailable; onToggled: root.dirty = true }
                         ToggleRow { title: "Полный экран"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"; last: true; checked: root.selectedDefaultDisplayMode === "fullscreen"; onClicked: { root.selectedDefaultDisplayMode = checked ? "windowed" : "fullscreen"; root.dirty = true } }
                     }
@@ -106,7 +104,7 @@ Item {
                         App.saveDefaults(memoryBox.value, cpuBox.value, diskBox.value,
                                          efiSwitch.checked, accelerationSwitch.checked,
                                          root.selectedDefaultDisplayMode, defaultGpuPicker.currentValue,
-                                         autoOpenSwitch.checked, root.selectedBackupDirectory)
+                                         App.openDisplayAfterStart, root.selectedBackupDirectory)
                         root.dirty = false
                     }
                 }
