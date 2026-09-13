@@ -86,8 +86,8 @@ Item {
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 32
-                        Label { Layout.fillWidth: true; text: "Основное"; color: Theme.text; font.pixelSize: 22; font.weight: Font.Bold }
-                        Label { Layout.fillWidth: true; text: "Ресурсы"; color: Theme.text; font.pixelSize: 22; font.weight: Font.Bold }
+                        Label { Layout.fillWidth: true; Layout.minimumWidth: 0; Layout.preferredWidth: 1; text: "Основное"; color: Theme.text; font.pixelSize: 22; font.weight: Font.Bold }
+                        Label { Layout.fillWidth: true; Layout.minimumWidth: 0; Layout.preferredWidth: 1; text: "Ресурсы"; color: Theme.text; font.pixelSize: 22; font.weight: Font.Bold }
                     }
                     RowLayout {
                         Layout.fillWidth: true
@@ -95,30 +95,39 @@ Item {
                         spacing: 32
                         ColumnLayout {
                             Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            Layout.preferredWidth: 1
                             spacing: 12
-                            AppTextField { id: createName; Layout.fillWidth: true; placeholderText: "Название"; selectByMouse: true }
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 6
+                                FieldLabel { text: "Название" }
+                                AppTextField { id: createName; Layout.fillWidth: true; selectByMouse: true }
+                            }
                             ComboBox { id: createImage; Layout.fillWidth: true; implicitHeight: 56; model: App.images; textRole: "name"; valueRole: "id" }
                             ActionButton { visible: App.images.length === 0; text: "Добавить ISO"; onClicked: root.openImages() }
                         }
                         ColumnLayout {
                             Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            Layout.preferredWidth: 1
                             spacing: 3
                             ResourceRow {
                                 title: "Память"
                                 iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/activity.svg"
                                 first: true
-                                AppSpinBox { id: createMemory; Layout.fillWidth: true; Layout.fillHeight: true; from: 1024; to: 262144; stepSize: 1024; value: App.defaultMemoryMiB; textFromValue: function(v) { return root.memoryText(v) } }
+                                AppSpinBox { id: createMemory; anchors.fill: parent; from: 1024; to: 262144; stepSize: 1024; value: App.defaultMemoryMiB; textFromValue: function(v) { return root.memoryText(v) } }
                             }
                             ResourceRow {
                                 title: "Процессоры"
                                 iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/settings.svg"
-                                AppSpinBox { id: createCpu; Layout.fillWidth: true; Layout.fillHeight: true; from: 1; to: 256; value: App.defaultCpuCount }
+                                AppSpinBox { id: createCpu; anchors.fill: parent; from: 1; to: 256; value: App.defaultCpuCount }
                             }
                             ResourceRow {
                                 title: "Диск"
                                 iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/drive.svg"
                                 last: true
-                                AppSpinBox { id: createDisk; Layout.fillWidth: true; Layout.fillHeight: true; from: 8; to: 2048; value: App.defaultDiskGiB; textFromValue: function(v) { return v + " ГиБ" } }
+                                AppSpinBox { id: createDisk; anchors.fill: parent; from: 8; to: 2048; value: App.defaultDiskGiB; textFromValue: function(v) { return v + " ГиБ" } }
                             }
                         }
                     }
@@ -130,13 +139,13 @@ Item {
                             title: "UEFI"
                             iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/activity.svg"
                             first: true
-                            AppSwitch { id: createEfi; Layout.fillWidth: true; Layout.fillHeight: true; checked: App.defaultUseEfi }
+                            AppSwitch { id: createEfi; anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; width: 52; height: 40; checked: App.defaultUseEfi }
                         }
                         ToggleRow {
                             title: "3D-ускорение"
                             iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/monitor.svg"
                             last: true
-                            AppSwitch { id: create3d; Layout.fillWidth: true; Layout.fillHeight: true; checked: App.defaultUse3d; enabled: App.intelRenderAvailable }
+                            AppSwitch { id: create3d; anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; width: 52; height: 40; checked: App.defaultUse3d; enabled: App.intelRenderAvailable }
                         }
                     }
                     RowLayout {
@@ -423,7 +432,7 @@ Item {
                 Image { anchors.centerIn: parent; width: 23; height: 23; source: resourceRow.iconSource }
             }
             Label { Layout.fillWidth: true; text: resourceRow.title; color: Theme.text; font.pixelSize: 15 }
-            ColumnLayout { id: controlSlot; Layout.preferredWidth: 166; Layout.preferredHeight: 48 }
+            Item { id: controlSlot; Layout.preferredWidth: 166; Layout.preferredHeight: 48 }
         }
     }
 
@@ -448,7 +457,7 @@ Item {
             spacing: 14
             Image { Layout.preferredWidth: 24; Layout.preferredHeight: 24; source: toggleRow.iconSource }
             Label { Layout.fillWidth: true; text: toggleRow.title; color: Theme.text; font.pixelSize: 14 }
-            ColumnLayout { id: controlSlot; Layout.preferredWidth: 52; Layout.preferredHeight: 40 }
+            Item { id: controlSlot; Layout.preferredWidth: 52; Layout.preferredHeight: 40 }
         }
     }
 
