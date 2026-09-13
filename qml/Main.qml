@@ -147,7 +147,7 @@ ApplicationWindow {
                 color: Theme.sidebar
                 RowLayout {
                     anchors.fill: parent
-                    anchors.leftMargin: 64
+                    anchors.leftMargin: window.machinePanelVisible ? 22 : 32
                     anchors.rightMargin: 24
                     spacing: 12
                     ToolButton {
