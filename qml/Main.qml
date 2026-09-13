@@ -400,7 +400,6 @@ ApplicationWindow {
             }
         }
         background: Rectangle { radius: window.compactRail ? 18 : 34; color: control.selected ? Theme.secondaryContainer : (control.hovered ? Theme.surfaceHover : "transparent") }
-        AppToolTip { visible: window.compactRail && control.hovered; text: control.text }
     }
 
     component MachineDelegate: Button {
