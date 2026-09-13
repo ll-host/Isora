@@ -71,8 +71,8 @@ ApplicationWindow {
             color: Theme.sidebar
             ColumnLayout {
                 anchors.fill: parent
-                anchors.leftMargin: window.compactRail ? 0 : 7
-                anchors.rightMargin: window.compactRail ? 14 : 15
+                anchors.leftMargin: 7
+                anchors.rightMargin: window.compactRail ? 7 : 15
                 anchors.topMargin: 0
                 anchors.bottomMargin: 12
                 spacing: 0
@@ -82,7 +82,7 @@ ApplicationWindow {
                     Layout.preferredHeight: 60
                     ToolButton {
                         anchors.left: parent.left
-                        anchors.leftMargin: window.compactRail ? 20 : 13
+                        anchors.leftMargin: window.compactRail ? 21 : 13
                         anchors.top: parent.top
                         anchors.topMargin: 10
                         width: 40
