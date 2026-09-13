@@ -368,7 +368,7 @@ Item {
                             anchors.margins: 20
                             spacing: 12
                             FieldLabel { text: "Название" }
-                            AppTextField { id: importName; Layout.fillWidth: true; placeholderText: "Название машины" }
+                            AppTextField { id: importName; Layout.fillWidth: true }
                             FieldLabel { text: "Файл QCOW2" }
                             RowLayout {
                                 Layout.fillWidth: true

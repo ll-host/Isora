@@ -9,11 +9,15 @@ SpinBox {
     editable: true
     hoverEnabled: true
     font.pixelSize: 15
+    leftPadding: 44
+    rightPadding: 44
+    topPadding: 0
+    bottomPadding: 0
     contentItem: TextInput {
         z: 2
         text: control.displayText
-        leftPadding: 48
-        rightPadding: 48
+        leftPadding: 0
+        rightPadding: 0
         color: Theme.text
         selectionColor: Theme.accent
         selectedTextColor: Theme.accentText
