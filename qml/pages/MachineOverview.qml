@@ -11,14 +11,30 @@ Item {
     signal openSettings()
     signal openSnapshots()
     signal openBackups()
+    signal deleteRequested(bool removeDisk)
 
-    ColumnLayout {
-        id: overviewContent
+    property string pendingAction: ""
+
+    onMachineChanged: pendingAction = ""
+
+    Flickable {
+        id: machineScroll
+        anchors.fill: parent
         visible: root.machine !== null
-        width: Math.max(0, Math.min(980, parent.width - 64))
-        x: (parent.width - width) / 2
-        y: Math.max(32, (parent.height - implicitHeight) * 0.42)
-        spacing: 0
+        clip: true
+        contentHeight: overviewContent.y + overviewContent.implicitHeight + 32
+        boundsBehavior: Flickable.StopAtBounds
+
+        ScrollBar.vertical: ScrollBar {
+            policy: ScrollBar.AsNeeded
+        }
+
+        ColumnLayout {
+            id: overviewContent
+            width: Math.max(0, Math.min(980, root.width - 64))
+            x: (root.width - width) / 2
+            y: Math.max(32, (root.height - implicitHeight) * 0.42)
+            spacing: 0
 
         RowLayout {
             Layout.fillWidth: true
@@ -113,18 +129,94 @@ Item {
             font.weight: Font.Bold
         }
 
-        ColumnLayout {
-            Layout.topMargin: 7
-            Layout.fillWidth: true
-            spacing: 4
-            ActionRow { title: "Оборудование"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/memory.svg"; first: true; onClicked: root.openSettings() }
-            ActionRow { title: "Снимки"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"; onClicked: root.openSnapshots() }
-            ActionRow {
-                title: "Запустить с диска"
-                iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/drive.svg"
-                last: true
-                enabled: root.machine && !root.machine.running && !App.busy
-                onClicked: App.startMachineFromDisk(root.machine.id)
+            ColumnLayout {
+                Layout.topMargin: 7
+                Layout.fillWidth: true
+                spacing: 4
+                ActionRow { title: "Оборудование"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/memory.svg"; first: true; onClicked: root.openSettings() }
+                ActionRow { title: "Снимки"; iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/snapshot.svg"; onClicked: root.openSnapshots() }
+                ActionRow {
+                    title: "Запустить с диска"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/drive.svg"
+                    last: true
+                    enabled: root.machine && !root.machine.running && !App.busy
+                    onClicked: App.startMachineFromDisk(root.machine.id)
+                }
+                ActionRow {
+                    Layout.topMargin: 12
+                    title: "Удалить машину"
+                    iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/trash.svg"
+                    first: true
+                    last: true
+                    danger: true
+                    enabled: root.machine && !root.machine.running && !App.busy
+                    onClicked: root.requestAction("delete-machine")
+                }
+                Surface {
+                    Layout.fillWidth: true
+                    Layout.topMargin: 4
+                    implicitHeight: inlineDeleteContent.implicitHeight + 36
+                    visible: root.pendingAction === "delete-machine" && root.machine !== null
+                    color: Theme.surfaceRaised
+                    border.width: 1
+                    border.color: Theme.dangerBorder
+
+                    ColumnLayout {
+                        id: inlineDeleteContent
+                        anchors.fill: parent
+                        anchors.margins: 18
+                        spacing: 12
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: root.machine ? "Удалить машину «" + root.machine.name + "»?" : "Удалить машину?"
+                            color: Theme.text
+                            font.pixelSize: 17
+                            font.weight: Font.DemiBold
+                            elide: Text.ElideRight
+                        }
+
+                        Label {
+                            Layout.fillWidth: true
+                            text: root.machine && root.machine.externalDisk
+                                ? "Запись машины будет удалена из Isora. Подключённый внешний QCOW2-диск останется на компьютере."
+                                : deleteDisk.checked
+                                    ? "Будут удалены конфигурация, снимки и виртуальный диск размером " + (root.machine ? root.machine.diskGiB : 0) + " ГБ."
+                                    : "Машина исчезнет из Isora, но виртуальный диск останется в хранилище."
+                            color: Theme.textSecondary
+                            font.pixelSize: 13
+                            wrapMode: Text.WordWrap
+                        }
+
+                        AppCheckBox {
+                            id: deleteDisk
+                            Layout.fillWidth: true
+                            visible: root.machine && !root.machine.externalDisk
+                            checked: true
+                            text: "Также удалить виртуальный диск"
+                        }
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Item { Layout.fillWidth: true }
+                            ActionButton {
+                                text: "Отмена"
+                                onClicked: root.pendingAction = ""
+                            }
+                            ActionButton {
+                                text: "Удалить"
+                                iconSource: "qrc:/qt/qml/Isora/qml/assets/icons/trash.svg"
+                                danger: true
+                                enabled: root.machine && !root.machine.running && !App.busy
+                                onClicked: {
+                                    const removeDisk = root.machine.externalDisk ? true : deleteDisk.checked;
+                                    root.pendingAction = "";
+                                    root.deleteRequested(removeDisk);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -210,6 +302,7 @@ Item {
         property url iconSource
         property bool first: false
         property bool last: false
+        property bool danger: false
         Layout.fillWidth: true
         implicitHeight: 72 + Math.min(12, root.heightSurplus * 0.03)
         leftInset: 0
@@ -224,24 +317,37 @@ Item {
                 Layout.preferredWidth: 46
                 Layout.preferredHeight: 46
                 radius: 23
-                color: Theme.accentSubtle
+                color: actionRow.danger ? Theme.dangerSurface : Theme.accentSubtle
                 Image { anchors.centerIn: parent; width: 24; height: 24; source: actionRow.iconSource }
             }
-            Label { Layout.fillWidth: true; text: actionRow.title; color: Theme.text; font.pixelSize: 16; font.weight: Font.Normal }
-            Label { text: "›"; color: Theme.textSecondary; font.pixelSize: 24 }
+            Label { Layout.fillWidth: true; text: actionRow.title; color: actionRow.danger ? Theme.dangerText : Theme.text; font.pixelSize: 16; font.weight: Font.Normal }
+            Label { text: "›"; color: actionRow.danger ? Theme.danger : Theme.textSecondary; font.pixelSize: 24 }
         }
         background: Rectangle {
             topLeftRadius: actionRow.first ? 28 : 8
             topRightRadius: actionRow.first ? 28 : 8
             bottomLeftRadius: actionRow.last ? 28 : 8
             bottomRightRadius: actionRow.last ? 28 : 8
-            color: actionRow.down ? Theme.surfaceHover : (actionRow.hovered ? Theme.surfaceRaised : Theme.surface)
+            color: actionRow.danger
+                ? (actionRow.down ? Qt.rgba(Theme.danger.r, Theme.danger.g, Theme.danger.b, 0.20)
+                                   : actionRow.hovered ? Qt.rgba(Theme.danger.r, Theme.danger.g, Theme.danger.b, 0.13) : Theme.surface)
+                : actionRow.down ? Theme.surfaceHover : (actionRow.hovered ? Theme.surfaceRaised : Theme.surface)
+            border.width: actionRow.danger ? 1 : 0
+            border.color: actionRow.danger ? Theme.dangerBorder : "transparent"
             scale: actionRow.down ? 0.992 : 1
             Behavior on scale { NumberAnimation { duration: 100 } }
         }
     }
 
-    function requestAction(action) { }
+    function requestAction(action) {
+        if (action !== "delete-machine" || !machine || machine.running || App.busy)
+            return
+        deleteDisk.checked = true
+        pendingAction = action
+        Qt.callLater(function() {
+            machineScroll.contentY = Math.max(0, machineScroll.contentHeight - machineScroll.height)
+        })
+    }
     function memoryText(value) {
         if (value <= 0)
             return "—"

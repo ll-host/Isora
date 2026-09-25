@@ -67,6 +67,10 @@ Item {
             onOpenSettings: root.openSettings()
             onOpenSnapshots: root.showSnapshots()
             onOpenBackups: root.openBackups()
+            onDeleteRequested: removeDisk => {
+                if (root.selectedMachine)
+                    App.deleteMachine(root.selectedMachine.id, removeDisk)
+            }
         }
 
         Item {

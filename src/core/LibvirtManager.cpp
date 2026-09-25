@@ -1069,6 +1069,7 @@ QVariantList LibvirtManager::domains(QString* error) const
                                   {QStringLiteral("state"), stateText(state)},
                                   {QStringLiteral("running"), virDomainIsActive(item) == 1},
                                   {QStringLiteral("diskPath"), diskPath},
+                                  {QStringLiteral("externalDisk"), false},
                                   {QStringLiteral("memoryMiB"), machineMemoryMiB},
                                   {QStringLiteral("cpuCount"), cpuCount},
                                   {QStringLiteral("diskGiB"), diskGiB},
